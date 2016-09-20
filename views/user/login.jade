@@ -1,0 +1,58 @@
+extends ../layout
+
+block pageCss
+  link(rel="stylesheet" href="/css/user/login.css")
+  link(rel="stylesheet" href="/plugins/naughty/naughty.css")
+
+  block page-body
+  div.login-page(ng-app="userLoginApp" ng-controller="userLoginCtrl" ng-cloak)
+    canvas#text(style="position: absolute; display: none;")
+    canvas#stage(style="position: absolute;")
+    //form#form
+      input#inputText(type="text" value="HELLO")
+      input(type="submit" value="TRY IT")
+
+    div.login-box
+      a(href="registered") 测试到注册页
+      ul.nav.nav-tabs
+        li.active
+          a(href="#loginBox" data-toggle="tab") 用户登录
+        li
+          a(href="#registerBox" data-toggle="tab") 用户注册
+        li
+          a(href="#downloadBox" data-toggle="tab") APP下载
+
+      div.tab-content
+        div#loginBox.tab-pane.fade.in.active
+          dl.tab-item
+            dd.name-box
+              label(for="username") 用户名：
+              input(ng-model="user.username" type="text" class="form-control")
+            dd.pass-box
+              label(for="password") 密码：
+              input(ng-model="user.password" type="password" class="form-control")
+            dd.submit-box
+              button(ng-click="doLogin()" class="btn") 登录
+            dd.wj
+              label 忘记密码？
+              a(href="#") 找回
+            dd.sf-login
+
+        div#registerBox.tab-pane.fade
+          dl.tab-item
+            dd.name-box
+              input(type="text" name="username" placeholder="用户名" class="form-control")
+            dd.pass-box
+              input(type="password" name="password" placeholder="登录密码" class="form-control")
+            dd.pass-box
+              input(type="password" name="confirmPass" placeholder="确认密码" class="form-control")
+            dd.pass-box 验证码
+            dd.submit-box
+              button(ng-click="doRegister()" class="btn") 注册
+
+block pageScript
+  script(type='text/javascript' src="/plugins/naughty/easeljs-0.7.1.min.js")
+  script(type='text/javascript' src="/plugins/naughty/TweenLite.min.js")
+  script(type='text/javascript' src="/plugins/naughty/naughty.js")
+  script(type='text/javascript' src="/js/user/login.js")
+

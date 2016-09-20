@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<SCRIPT LANGUAGE="JavaScript">
+    <!--
+
+
+    //生成颜色代码
+    function produceColor(){
+        //全色
+        var color = new Array("1","2","3","4","5","6","7","8","9","A","B","C","D","E","F");
+//        var color = new Array("0","3","6","9","C","F");   //深色
+
+        var colors = [];
+        for(var i=0;i<6;i++){
+            colors.push(color[Math.round(Math.random()*10)%color.length]);
+        }
+        return "#"+colors.join("");
+    }
+
+
+    speed=250;
+    document.bgColor="FFFFFF";
+    bg=new Array("FFFFFF","FFFFFF","FFFFFF");
+    function begin() {
+        document.form.col1.value=" X "; document.form.col2.value=" X ";
+        document.form.col3.value=" X "; i=0; roll(speed);
+    }
+    function roll(speedB) //轮子滚动
+    {
+        if (document.form.col1.value==" X ") {
+            document.form.c1.value=document.form.b1.value;
+            document.form.b1.value=document.form.a1.value;
+            document.form.a1.value=
+                    color[Math.round(Math.random()*10)%6]+
+                    color[Math.round(Math.random()*10)%6];  //利用随机函数产生轮子上的颜色值
+        }
+        if (document.form.col2.value==" X ") {
+            document.form.c2.value=document.form.b2.value;
+            document.form.b2.value=document.form.a2.value;
+            document.form.a2.value=
+                    color[Math.round(Math.random()*10)%6]+
+                    color[Math.round(Math.random()*10)%6];
+        }
+        if (document.form.col3.value==" X ") {
+            document.form.c3.value=document.form.b3.value;
+            document.form.b3.value=document.form.a3.value;
+            document.form.a3.value=
+                    color[Math.round(Math.random()*10)%6]+
+                    color[Math.round(Math.random()*10)%6];
+        }
+        setTimeout("roll("+speedB+")",speedB);
+    }
+    function stop(col) //轮子停止滚动
+    {
+        if (col==1) {document.form.col1.value="   ";i++;}
+        if (col==2) {document.form.col2.value="   ";i++;}
+        if (col==3) {document.form.col3.value="   ";i++;}
+        if (i==3) {
+            bg[0]=document.form.a1.value+
+                    document.form.a2.value+
+                    document.form.a3.value;
+            bg[1]=document.form.b1.value+
+                    document.form.b2.value+
+                    document.form.b3.value;
+            bg[2]=document.form.c1.value+
+                    document.form.c2.value+
+                    document.form.c3.value;
+            speedB=500000;roll(speedB);
+        }
+    }
+    function view(letter) //颜色预览
+    {
+        document.bgColor=bg[letter];
+        document.form.color.value="#"+bg[letter];
+    }
+    -->
+</script>
+<center>
+    <br><br><br><br>
+    <form name="form">
+        <table cellpadding=2 border=1>
+            <tr><td align=center>
+                <input type=text name="a1" size=3 onFocus="this.blur()" value=" ">
+                <input type=text name="a2" size=3 onFocus="this.blur()" value=" ">
+                <input type=text name="a3" size=3 onFocus="this.blur()" value=" ">
+                <input type=button onClick="view(0)" value="预览"><br>
+                <input type=text name="b1" size=3 onFocus="this.blur()" value=" ">
+                <input type=text name="b2" size=3 onFocus="this.blur()" value=" ">
+                <input type=text name="b3" size=3 onFocus="this.blur()" value=" ">
+                <input type=button onClick="view(1)" value="预览"><br>
+                <input type=text name="c1" size=3 onFocus="this.blur()" value=" ">
+                <input type=text name="c2" size=3 onFocus="this.blur()" value=" ">
+                <input type=text name="c3" size=3 onFocus="this.blur()" value=" ">
+                <input type=button onClick="view(2)" value="预览"><br>
+                <input type=button onClick="stop(1)" value=" X " name="col1">
+                <input type=button onClick="stop(2)" value=" X " name="col2">
+                <input type=button onClick="stop(3)" value=" X " name="col3">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </td>
+                <td valign=middle align=center>
+                    <input type=button onClick="begin()" value="启动!"><p>
+                    <table bgcolor=FFFFFF border=1 cellspacing=0>
+                        <tr><td align=center valign=middle>按"X" 轮子停止转动...<p>
+                            BG Color = <input type=text size=7 value="#FFFFFF" name=color>
+                        </td></tr>
+                    </table>
+                </td></tr>
+        </table>
+    </form>
+</center>
+
+<p><center>
+    <table class=30pt>
+        <tr><td>颜色的随机产生
+        </tr><tr><td>按下启动按钮,右边的三排轮子开始滚动
+    </tr><tr><td>按下三个X按钮颜色值定下来
+    </tr><tr><td>按下预览按钮可看颜色效果
+    </tr>
+    </table><p>
+    <br>
+    <p><a href="http://www.webdm.cn">网页代码站</a> - 最专业的网页代码下载网站 - 致力为中国站长提供有质量的网页代码！</p>
+</body>
+</html>

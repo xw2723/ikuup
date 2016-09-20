@@ -1,0 +1,39 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/plugins/bootstrap/css/bootstrap.css')
+    link(rel='stylesheet', href='/css/common.css')
+    link(rel='stylesheet', href='/css/main.css')
+    block pageCss
+
+  body
+    block page-body
+
+    <!-- Piwik -->
+    //noscript
+      p
+        img(src="//localhost/piwik/piwik.php?idsite=1" style="border:0;" alt="")
+
+    div.ajax-loading-box
+      div#ajaxLoadingDialog.modal.fade(tabindex="-1" role="dialog" aria-hidden)
+        div.modal-dialog
+          div.modal-content
+            div.modal-body
+              p.title 加载中...
+              div.spinner-loading
+                div.rect1
+                div.rect2
+                div.rect3
+                div.rect4
+                div.rect5
+                div.rect6
+                div.rect7
+                div.rect8
+
+
+  script(src="/plugins/jquery/jquery-1.10.2.js")
+  script(src="/plugins/bootstrap/js/bootstrap.js")
+  script(src="/plugins/angular/angular.js")
+  script(src="/js/common.js")
+  block pageScript

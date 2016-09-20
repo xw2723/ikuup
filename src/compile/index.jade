@@ -1,0 +1,18 @@
+// 编译显示注释
+//- 编译不显示注释
+<!DOCTYPE html>
+html(lang="en")
+   head
+      meta(charset="utf-8")
+      title 首页
+      include ../common/include/commonfile.jade
+      link(rel="stylesheet" type="text/css" href="/src/build/css/index.css")
+
+   body
+      p hello word!!
+      p#test 我的第一个程序
+      p 你好！
+      div(style="color: red;") 哈哈
+         span(style="color: yellow;") 原来如此
+
+   script(type="text/javascript" src="/src/build/js/index.js")

@@ -1,0 +1,29 @@
+#form input[type="text"] {
+  border: 1px solid #ddd;
+  padding: 6px;
+  font-size: 18px;
+  width: 200px;
+  text-transform: uppercase;
+  display: inline;
+}
+
+#form input[type="submit"] {
+  display: block;
+  width: 100px;
+  border: 0;
+  line-height: 35px;
+  height: 35px;
+  color: #fff;
+  background: mediumpurple;
+  font-size: 18px;
+  display: inline;
+  cursor: pointer;
+}
+
+#form {
+  width: 600px;
+  height: 100px;
+  position: absolute;
+  top:50px;
+  left:50%;
+}

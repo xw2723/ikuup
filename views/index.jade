@@ -1,0 +1,26 @@
+extends layout
+
+block pageCss
+  link(rel="stylesheet" href="/css/index.css")
+  style.
+    #testBtn{
+      width: 120px;
+      height: 34px;
+      line-height: 34px;
+      border: 1px solid red;
+      cursor: pointer;
+    }
+
+  block page-body
+  h1= title
+  p Welcome to #{title}
+  ul
+    each item,i in list
+      li #{item}
+
+  a(href="/user/login?keyword=车厘子") 登录
+
+  div#testBtn 测试点击数
+
+block pageScript
+  script(type='text/javascript' src="/js/index.js")

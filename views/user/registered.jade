@@ -1,0 +1,17 @@
+extends ../layout
+
+block pageCss
+  link(rel="stylesheet" href="/css/user/registered.css")
+  link(rel="stylesheet" href="/plugins/naughty/naughty.css")
+
+  block page-body
+
+  ul
+    li
+      span 列名：
+      input(type="text" ng-model="itemModel.colName")
+    li
+
+block pageScript
+  script(type='text/javascript' src="/js/user/registered.js")
+
