@@ -188,6 +188,12 @@ window.xwpk = (function(){
                 browser.exploreVersion = RegExp['\x241'];
             }
 
+            //360
+            if((window.navigator.mimeTypes[40] || !window.navigator.mimeTypes.length)){
+                browser.exploreName = "360";
+                browser.exploreVersion = "";
+            }
+
             //QQ browser
             var isQQ_pc = /qqbrowser\/(\d+\.\d)/i.test(agent) && !/micromessenger\/(\d+\.\d)/i.test(agent);
             if (isQQ_pc) {
@@ -286,18 +292,12 @@ window.xwpk = (function(){
                 browser.exploreVersion = RegExp['\x241'];
             }
 
+            // Opera
             var isOpera = /opr\/(\d+\.\d)/i.test(agent) || /presto\/(\d+\.\d)/i.test(agent);
-            // Opera 9.50+
             if ((!!opera && opera.version) || isOpera){
                 browser.exploreName = "opera";
                 browser.exploreVersion = opera ? parseFloat(opera.version()) : RegExp['\x241'];
             }
-
-            if((window.navigator.mimeTypes[40] || !window.navigator.mimeTypes.length)){
-                browser.exploreName = "360";
-                browser.exploreVersion = "";
-            }
-            document.getElementById("txt").innerText = navigator.userAgent;
 
             return browser;
         }
@@ -811,8 +811,8 @@ window.xwpk = (function(){
                 iterator = 0; // To avoid JSLint warning of empty block
                 if (typeof callback === 'function') { callback(); }
             };
-            //var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
-            var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
+            var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
+            //var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
 
             image.src = apiUrl + (apiUrl.indexOf('?') < 0 ? '?' : '&') + request +"&"+ new Date().getTime();
         }
