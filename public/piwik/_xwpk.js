@@ -237,8 +237,8 @@ window.xwpk = (function(){
                 browser.exploreVersion = RegExp['\x241'];
             }
 
-            //搜狗浏览器
-            var isSogou = /sogoumse,sogoumobilebrowser\/(\d+\.\d)/i.test(agent);
+            //搜狗浏览器`SE 2.X
+            var isSogou = /sogoumse,sogoumobilebrowser\/(\d+\.\d)/i.test(agent) || /se (\d+)\.*/i.test(agent);
             if (isSogou) {
                 browser.exploreName = "sogou";
                 browser.exploreVersion = RegExp['\x241'];
@@ -258,18 +258,46 @@ window.xwpk = (function(){
                 browser.exploreVersion = RegExp['\x241'];
             }
 
+            //2345浏览器
+            var isAY = /2345browser\/(\d+\.\d)/i.test(agent);
+            if (isAY) {
+                browser.exploreName = "2345";
+                browser.exploreVersion = RegExp['\x241'];
+            }
+
             //ubrowser
             var isU = /ubrowser\/(\d+\.\d)/i.test(agent);
             if (isU) {
-                browser.exploreName = "";
-                browser.exploreVersion = "";
+                browser.exploreName = "ubrowser";
+                browser.exploreVersion = RegExp['\x241'];
             }
 
-            // Opera 9.50+
-            if (!!opera && opera.version){
-                browser.exploreName = "opera";
-                browser.exploreVersion = parseFloat(opera.version());
+            //小米浏览器
+            var isXiaomi = /xiaomi\/miuibrowser\/(\d+\.\d)/i.test(agent);
+            if (isXiaomi) {
+                browser.exploreName = "xiaomi";
+                browser.exploreVersion = RegExp['\x241'];
             }
+
+            //绿茶浏览器
+            var isLe = /lebrowser\/(\d+\.\d)/i.test(agent);
+            if (isLe) {
+                browser.exploreName = "lvcha";
+                browser.exploreVersion = RegExp['\x241'];
+            }
+
+            var isOpera = /opr\/(\d+\.\d)/i.test(agent) || /presto\/(\d+\.\d)/i.test(agent);
+            // Opera 9.50+
+            if ((!!opera && opera.version) || isOpera){
+                browser.exploreName = "opera";
+                browser.exploreVersion = opera ? parseFloat(opera.version()) : RegExp['\x241'];
+            }
+
+            if((window.navigator.mimeTypes[40] || !window.navigator.mimeTypes.length)){
+                browser.exploreName = "360";
+                browser.exploreVersion = "";
+            }
+            document.getElementById("txt").innerText = navigator.userAgent;
 
             return browser;
         }
@@ -280,8 +308,6 @@ window.xwpk = (function(){
          */
         function getOS() {
             var sUserAgent = navigator.userAgent;
-            //将userAgent输出，查看未知系统
-            params["userAgent"] = sUserAgent;
             var infoOS = sUserAgent.match(/(\(.*?\))+/g)[0];
 
             var isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
@@ -377,59 +403,64 @@ window.xwpk = (function(){
          */
         function getRequest(){
             //唯一标识
-            params["uuid"] = uuid;
+            params["uuid"] = params["uuid"] ? params["uuid"] : uuid;
 
-            params["pageUrl"] = document.location.href;
-            params["pageDomain"] = document.domain + (window.location.port?":"+window.location.port:"");
-            params["pagePath"] = document.location.pathname;
-            params["title"] = document.title;
-            params["pageParameter"] = location.search.substr(1);
+            params["pageUrl"] =  params["pageUrl"] ? params["pageUrl"] : document.location.href;
+            params["pageDomain"] = params["pageDomain"] ? params["pageDomain"] : (document.domain + (window.location.port?":"+window.location.port:""));
+            params["pagePath"] = params["pagePath"] ? params["pagePath"] : document.location.pathname;
+            params["title"] = params["title"] ? params["title"] : document.title;
+            params["pageParameter"] = params["pageParameter"] ? params["pageParameter"] : location.search.substr(1);
 
-            var referrer = getDomainPathParameter();
-            params["referrerUrl"] = referrer.referrer;
-            params["referrerDomain"] = referrer.domain;
-            params["referrerPath"] = referrer.path;
-            params["referrerParameter"] = referrer.parameter;
+            if(!params["referrerUrl"]){
+                var referrer = getDomainPathParameter();
+                params["referrerUrl"] = referrer.referrer;
+                params["referrerDomain"] = referrer.domain;
+                params["referrerPath"] = referrer.path;
+                params["referrerParameter"] = referrer.parameter;
+
+                //来源搜索引擎类型
+                params["searchEngine"] = params["searchEngine"] ? params["searchEngine"] : (getSearchSource(referrer.referrer)||"");
+                //搜索关键字
+                params["searchKeyword"] = params["searchKeyword"] ? params["searchKeyword"] : (getSearchKeyword(referrer.referrer)||"");
+            }
 
             //pc or mobile
-            params["deviceType"] = getDeviceType();
+            params["deviceType"] = params["deviceType"] ? params["deviceType"] : getDeviceType();
 
             //操作系统
-            var infoOS = getOS();
-            params["osName"] = infoOS.name;
-            params["osVersion"] = infoOS.version;
-
-            var browserInfo = getBrowserInfo();
-            for(key in browserInfo){
-                params[key] = browserInfo[key];
+            if(!params["osName"]){
+                var infoOS = getOS();
+                params["osName"] = infoOS.name;
+                params["osVersion"] = infoOS.version;
             }
-            params["screenPoint"] = (window.screen.width + "x" + window.screen.height);
 
-            //params["_lg"] = navigator.language;
+            //浏览器信息
+            if(!params["exploreName"]){
+                var browserInfo = getBrowserInfo();
+                for(key in browserInfo){
+                    params[key] = browserInfo[key];
+                }
+            }
 
-            //来源搜索引擎类型
-            params["searchEngine"] = getSearchSource(referrer.referrer)||"";
-            //搜索关键字
-            params["searchKeyword"] = getSearchKeyword(referrer.referrer)||"";
+            //分辨率
+            params["screenPoint"] = params["screenPoint"] ? params["screenPoint"] : (window.screen.width +"x"+ window.screen.height);
 
             //获取活动关键字
-            params["bitrack"] = getBitrack()||"";
+            params["bitrack"] = params["bitrack"] ? params["bitrack"] : (getBitrack()||"");
 
             //站内搜索关键词
-            params["siteSearchKeyword"] = getSiteSearchKeyword()||"";
+            params["siteSearchKeyword"] = params["siteSearchKeyword"] ? params["siteSearchKeyword"] : (getSiteSearchKeyword()||"");
             //站内搜索SKU数
-            params["siteSearchSkuCount"] = getSiteSearchSKUCount()||"";
+            params["siteSearchSkuCount"] = params["siteSearchSkuCount"] ? params["siteSearchSkuCount"] : (getSiteSearchSKUCount()||"");
             //站内搜索结果的前10个sku编号
-            params["siteSearchTopSku"] = getSiteSearchTopSku()||"";
+            params["siteSearchTopSku"] = params["siteSearchTopSku"] ? params["siteSearchTopSku"] : (getSiteSearchTopSku()||"");
 
             //获取客户sysno
-            params["customerId"] = getCustomerId();
-
+            params["customerId"] = params["customerId"] ? params["customerId"] : (getCustomerId()||"");
             //获取站点id
-            params["webSiteSysno"] = getCookie("WebSiteSysNo")||"";
-
+            params["webSiteSysno"] = params["webSiteSysno"] ? params["webSiteSysno"] : (getCookie("WebSiteSysNo")||"");
             //获取城市id
-            params["deliverySysno"] = getCookie("DeliverySysNo")||"";
+            params["deliverySysno"] = params["deliverySysno"] ? params["deliverySysno"] : (getCookie("DeliverySysNo")||"");
 
             for(key in mainParams){
                 var isExist = false;
@@ -725,6 +756,10 @@ window.xwpk = (function(){
          */
         function getDeviceType(){
             var userAgentInfo = navigator.userAgent;
+
+            //将userAgent输出，查看未知系统
+            params["userAgent"] = userAgentInfo;
+
             var Agents = ["Android", "iPhone",
                 "SymbianOS", "Windows Phone",
                 "iPad", "iPod"];
@@ -776,9 +811,8 @@ window.xwpk = (function(){
                 iterator = 0; // To avoid JSLint warning of empty block
                 if (typeof callback === 'function') { callback(); }
             };
-            var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
-            //var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
-            //var apiUrl = "//localhost:3000/piwik/xwpk";
+            //var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
+            var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
 
             image.src = apiUrl + (apiUrl.indexOf('?') < 0 ? '?' : '&') + request +"&"+ new Date().getTime();
         }
@@ -802,7 +836,7 @@ window.xwpk = (function(){
                 if(bltjas[1] == bltjas[2] && bltjas[1] == bltjas[3]){
                     params["isNewVisiter"] = 1; //新客
                 }else{
-                    params["isNewVisiter"] = 0; //老客
+                    params["isNewVisiter"] = 2; //老客
                 }
             }else{
                 bltjas = [];
@@ -1126,8 +1160,10 @@ window.xwpk = (function(){
             var exp = new Date();
             exp.setTime(exp.getTime() + strsec*1);
             document.cookie = name + "=" + encodeURIComponent (value) + ";path=/;domain=benlai.com;expires=" + exp.toGMTString();
+            //document.cookie = name + "=" + encodeURIComponent (value) + ";path=/;expires=" + exp.toGMTString();
         }else{
             document.cookie = name + "=" + encodeURIComponent (value) + ";path=/;domain=benlai.com";
+            //document.cookie = name + "=" + encodeURIComponent (value) + ";path=/";
         }
     };
 
