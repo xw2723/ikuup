@@ -77,8 +77,8 @@ var _xwq = _xwq || [];
 (function() {
     //var u="//localhost:3000/piwik/";
     var u="//10.10.110.113:3000/piwik/";
-    //_xwq.push(["setCustomerAuto", "off"]);
-    //_xwq.push(["setCustomerId", "101"]);
+    //_xwq.push(["setCustomerAuto", "off"]);  //设置customerId是否自动从cookie中获取， on自动(默认)，off关闭
+    _xwq.push(["setCustomerId", "101"]);
     _xwq.push(["setAppType", "web"]);
     _xwq.push(["setSiteId", 1]);
 
