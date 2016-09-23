@@ -313,7 +313,7 @@ window.xwpk = (function(){
             var isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
             if (isMac) return {
                 name: "mac",
-                version: ""
+                version: sUserAgent.match(/Mac OS X (\d+\.\d+)/i)[1]
             };
 
             var isUnix = (navigator.platform == "X11") && !isWin && !isMac;
@@ -405,11 +405,15 @@ window.xwpk = (function(){
             //唯一标识
             params["uuid"] = params["uuid"] ? params["uuid"] : uuid;
 
-            params["pageUrl"] =  params["pageUrl"] ? params["pageUrl"] : document.location.href;
+            //标题
+            params["title"] = params["title"] ? params["title"] : document.title;
+
+            //将路径中的双引号替换成单引号
+            params["pageUrl"] =  params["pageUrl"] ? params["pageUrl"] : document.location.href.replace(/(\%22)+/g,"'");
+            params["pageParameter"] = params["pageParameter"] ? params["pageParameter"] : location.search.substr(1).replace(/(\%22)+/g,"'");
+
             params["pageDomain"] = params["pageDomain"] ? params["pageDomain"] : (document.domain + (window.location.port?":"+window.location.port:""));
             params["pagePath"] = params["pagePath"] ? params["pagePath"] : document.location.pathname;
-            params["title"] = params["title"] ? params["title"] : document.title;
-            params["pageParameter"] = params["pageParameter"] ? params["pageParameter"] : location.search.substr(1);
 
             if(!params["referrerUrl"]){
                 var referrer = getDomainPathParameter();
@@ -670,11 +674,12 @@ window.xwpk = (function(){
 
             var paths = path.split("?")[1],
                 typeTokey = {
-                    "baidu": "wd",
-                    "sogou": "query",
-                    "360": "q",
-                    "google": "",
-                    "yahoo": ""
+                    "test": ["wd","word"],
+                    "baidu": ["wd","word"],
+                    "sogou": ["query"],
+                    "360": ["q"],
+                    "google": [""],
+                    "yahoo": [""]
                 },
                 searchType = getSearchSource(path) || "",
                 searchKey = typeTokey[searchType] || "";
@@ -684,8 +689,11 @@ window.xwpk = (function(){
                 for(var i=0;i<pms.length;i++){
                     var pmses = pms[i].split("=");
                     var pasKey = pmses.shift();     //删除属性名
-                    if(pasKey == searchKey){
-                        return pmses.join("");
+
+                    for(var j=0;j<searchKey.length;j++){
+                        if(pasKey == searchKey[j]){
+                            return pmses.join("");
+                        }
                     }
                 }
             }
@@ -702,6 +710,7 @@ window.xwpk = (function(){
 
             var type = "",
                 source = {
+                    "10.10.110.113": "test",
                     "baidu.com": "baidu",
                     "sogou.com": "sogou",
                     "so.com": "360",
@@ -780,7 +789,8 @@ window.xwpk = (function(){
         function getDomainPathParameter(){
             var referrer,urls,domain,path,parameter;
 
-            referrer = document.referrer;
+            //将路径中的双引号替换成单引号
+            referrer = document.referrer.replace(/(\%22)+/g,"'");
             if(referrer){
                 urls = referrer.split("?");
                 if(urls.length>=1){
@@ -1156,13 +1166,14 @@ window.xwpk = (function(){
     var setCookie = function(name,value,time){
         //默认30天过期
         var strsec = getsec(time?time:"d30");
+        var domain = document.domain;
         if(strsec){
             var exp = new Date();
             exp.setTime(exp.getTime() + strsec*1);
-            document.cookie = name + "=" + encodeURIComponent (value) + ";path=/;domain=benlai.com;expires=" + exp.toGMTString();
+            document.cookie = name + "=" + encodeURIComponent (value) + ";path=/;domain="+ domain +";expires=" + exp.toGMTString();
             //document.cookie = name + "=" + encodeURIComponent (value) + ";path=/;expires=" + exp.toGMTString();
         }else{
-            document.cookie = name + "=" + encodeURIComponent (value) + ";path=/;domain=benlai.com";
+            document.cookie = name + "=" + encodeURIComponent (value) + ";path=/;domain="+ domain;
             //document.cookie = name + "=" + encodeURIComponent (value) + ";path=/";
         }
     };
@@ -1178,6 +1189,31 @@ window.xwpk = (function(){
         var cval=getCookie(name);
         if(cval!=null)
             document.cookie= name + "=" + cval + ";expires=" + exp.toGMTString();
+    };
+
+    /**
+     * 判断对象是不是相应的类型
+     * @param obj   对象
+     * @param type  对象的类型
+     * @returns {boolean}
+     */
+    var isObjectType = function(obj, type){
+        switch (type){
+            case "Object":
+                return Object.prototype.toString.call(obj) === '[object Object]';
+            case "Array":
+                return Object.prototype.toString.call(obj) === '[object Array]';
+            case "String":
+                return Object.prototype.toString.call(obj) === '[object String]';
+            case "Number":
+                return Object.prototype.toString.call(obj) === '[object Number]';
+            default:
+                return false;
+        }
+    };
+
+    var isObject = function(obj){
+        return Object.prototype.toString.call(obj) === '[object Array]';
     };
 
     var xwpk = {
