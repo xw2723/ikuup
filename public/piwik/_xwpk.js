@@ -315,7 +315,8 @@ window.xwpk = (function(){
             var isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
             if (isMac) return {
                 name: "mac",
-                version: sUserAgent.match(/Mac OS X (\d+\.\d+)/i)[1]
+                //version: "sUserAgent.match(/Mac OS X (\d+\.\d+)/i)[1]
+                version: ""
             };
 
             var isUnix = (navigator.platform == "X11") && !isWin && !isMac;
