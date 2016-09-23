@@ -147,6 +147,14 @@ window.xwpk = (function(){
                     exploreVersion: ""
                 };
 
+            //micromessenger 微信 app 优先级最高
+            var isWechat = /micromessenger\/(\d+\.\d)/i.test(agent);
+            if (isWechat) {
+                browser.exploreName = "wechat";
+                browser.exploreVersion = RegExp['\x241'];
+                return browser;
+            }
+
             var version = 0;
             //ie
             if (/(msie\s|trident.*rv:)([\w.]+)/.test(agent)) {
@@ -167,7 +175,6 @@ window.xwpk = (function(){
             }
 
             //safari
-            //var isSafari = /(\d+\.\d)?(?:\.\d)?\s+safari\/?(\d+\.\d+)?/i.test(agent) && !/chrome/i.test(agent) && !/crios\/(\d+\.\d)/i.test(agent);
             var isSafari = /(\d+\.\d)?(?:\.\d)?\s+safari\/?(\d+\.\d+)?/i.test(agent);
             if (isSafari) {
                 browser.exploreName = "safari";
@@ -186,12 +193,6 @@ window.xwpk = (function(){
             if (isFirefox) {
                 browser.exploreName = "firefox";
                 browser.exploreVersion = RegExp['\x241'];
-            }
-
-            //360
-            if((window.navigator.mimeTypes[40] || !window.navigator.mimeTypes.length)){
-                browser.exploreName = "360";
-                browser.exploreVersion = "";
             }
 
             //QQ browser
@@ -213,13 +214,7 @@ window.xwpk = (function(){
             if (isQQ_app) {
                 browser.exploreName = "qq app";
                 browser.exploreVersion = RegExp['\x241'];
-            }
-
-            //micromessenger 微信 app
-            var isWechat = /micromessenger\/(\d+\.\d)/i.test(agent);
-            if (isWechat) {
-                browser.exploreName = "wechat";
-                browser.exploreVersion = RegExp['\x241'];
+                return browser;
             }
 
             //baidu browser
@@ -234,6 +229,7 @@ window.xwpk = (function(){
             if (isBaidu_app) {
                 browser.exploreName = "baidu app";
                 browser.exploreVersion = RegExp['\x241'];
+                return browser;
             }
 
             //ucbrowser
@@ -290,6 +286,12 @@ window.xwpk = (function(){
             if (isLe) {
                 browser.exploreName = "lvcha";
                 browser.exploreVersion = RegExp['\x241'];
+            }
+
+            //360
+            if((window.navigator.mimeTypes[40] || !window.navigator.mimeTypes.length)){
+                browser.exploreName = "360";
+                browser.exploreVersion = "";
             }
 
             // Opera
@@ -1163,19 +1165,18 @@ window.xwpk = (function(){
      * @param name
      * @param value
      */
-    var setCookie = function(name,value,time){
+    var setCookie = function(name,value,time,domain){
         //默认30天过期
         var strsec = getsec(time?time:"d30");
-        var domain = document.domain;
+        var cookieStr = "";
         if(strsec){
             var exp = new Date();
             exp.setTime(exp.getTime() + strsec*1);
-            document.cookie = name + "=" + encodeURIComponent (value) + ";path=/;domain="+ domain +";expires=" + exp.toGMTString();
-            //document.cookie = name + "=" + encodeURIComponent (value) + ";path=/;expires=" + exp.toGMTString();
+            cookieStr = name + "=" + encodeURIComponent (value) + ";path=/;expires=" + exp.toGMTString() + (domain ? (";domain="+domain) : "");
         }else{
-            document.cookie = name + "=" + encodeURIComponent (value) + ";path=/;domain="+ domain;
-            //document.cookie = name + "=" + encodeURIComponent (value) + ";path=/";
+            cookieStr = name + "=" + encodeURIComponent (value) + ";path=/" + (domain ? (";domain="+domain) : "");
         }
+        document.cookie = cookieStr;
     };
 
     /**
