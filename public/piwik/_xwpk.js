@@ -288,11 +288,11 @@ window.xwpk = (function(){
                 browser.exploreVersion = RegExp['\x241'];
             }
 
-            //360
-            if((window.navigator.mimeTypes[40] || !window.navigator.mimeTypes.length)){
-                browser.exploreName = "360";
-                browser.exploreVersion = "";
-            }
+            //360 会有将firefox统计成360的情况
+            //if((window.navigator.mimeTypes[40] || !window.navigator.mimeTypes.length)){
+            //    browser.exploreName = "360";
+            //    browser.exploreVersion = "";
+            //}
 
             // Opera
             var isOpera = /opr\/(\d+\.\d)/i.test(agent) || /presto\/(\d+\.\d)/i.test(agent);
@@ -824,8 +824,8 @@ window.xwpk = (function(){
                 iterator = 0; // To avoid JSLint warning of empty block
                 if (typeof callback === 'function') { callback(); }
             };
-            var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
-            //var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
+            //var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
+            var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
 
             image.src = apiUrl + (apiUrl.indexOf('?') < 0 ? '?' : '&') + request +"&"+ new Date().getTime();
         }
