@@ -10,7 +10,7 @@ $(document).ready(function(){
         _xwq.push(["setCustomerId", "111"]);
 
         _xwq.push(['trackEvent','主流程', '首页加入购物车', {
-                sku: sku
+                "current_url": location.search.substr(1)
             }
         ]);
 
