@@ -1173,7 +1173,7 @@ window.xwpk = (function(){
     var setCookie = function(name,value,time,domain){
         var strsec = getsec(time?time:"d30"),   //默认30天过期
             cookieStr = "",
-            domainStr = (domain ? (";domain="+domain) : document.domain);
+            domainStr = ";domain=" + (domain ? domain: document.domain);
 
         if(strsec){
             var exp = new Date();
