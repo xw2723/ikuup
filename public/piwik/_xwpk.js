@@ -824,8 +824,8 @@ window.xwpk = (function(){
                 iterator = 0; // To avoid JSLint warning of empty block
                 if (typeof callback === 'function') { callback(); }
             };
-            //var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
-            var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
+            var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
+            //var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
 
             image.src = apiUrl + (apiUrl.indexOf('?') < 0 ? '?' : '&') + request +"&"+ new Date().getTime();
         }
@@ -1022,6 +1022,10 @@ window.xwpk = (function(){
 
                 params["eventCat1"] = cat1;
                 params["eventCat2"] = cat2;
+
+                for(var key in pams){
+                    pams[key] = pams[key].replace(/(\%22)+/g,"'");
+                }
                 params["eventParams"] = pams;
 
                 //请求类型 事件请求
@@ -1167,15 +1171,16 @@ window.xwpk = (function(){
      * @param value
      */
     var setCookie = function(name,value,time,domain){
-        //默认30天过期
-        var strsec = getsec(time?time:"d30");
-        var cookieStr = "";
+        var strsec = getsec(time?time:"d30"),   //默认30天过期
+            cookieStr = "",
+            domainStr = (domain ? (";domain="+domain) : document.domain);
+
         if(strsec){
             var exp = new Date();
             exp.setTime(exp.getTime() + strsec*1);
-            cookieStr = name + "=" + encodeURIComponent (value) + ";path=/;expires=" + exp.toGMTString() + (domain ? (";domain="+domain) : "");
+            cookieStr = name + "=" + encodeURIComponent (value) + ";path=/;expires=" + exp.toGMTString() + domainStr;
         }else{
-            cookieStr = name + "=" + encodeURIComponent (value) + ";path=/" + (domain ? (";domain="+domain) : "");
+            cookieStr = name + "=" + encodeURIComponent (value) + ";path=/" + domainStr;
         }
         document.cookie = cookieStr;
     };
