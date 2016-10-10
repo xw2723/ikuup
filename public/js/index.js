@@ -8,9 +8,9 @@ $(document).ready(function(){
     $("#testBtn").click(function(){
         _xwq.push(['setCustomVariable', "ddd", "7777"]);
         _xwq.push(["setCustomerId", "111"]);
-
+        alert(123);
         _xwq.push(['trackEvent','主流程', '首页加入购物车', {
-                "current_url": location.search.substr(1)
+            "current_url": location.search.substr(1)
             }
         ]);
 

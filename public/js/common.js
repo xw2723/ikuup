@@ -77,25 +77,13 @@ var _xwq = _xwq || [];
 (function() {
     //var u="//localhost:3000/piwik/";
     var u="//10.10.110.113:3000/piwik/";
-    //_xwq.push(["setCustomerAuto", "off"]);  //设置customerId是否自动从cookie中获取， on自动(默认)，off关闭
-    _xwq.push(["setCustomerId", "101"]);
-    _xwq.push(["setAppType", "web"]);
-    _xwq.push(["setSiteId", 1]);
+    _xwq.push(["setSiteId", 888]);
+    //_xwq.push(["setCustomerAuto", "off"]);    //设置customerId是否自动从cookie中获取， on自动(默认)，off关闭
+    //_xwq.push(["setCustomerId", "101"]);      //设置customerId
+    //_xwq.push(["setAppType", "web"]);         //默认为web站
+    //_xwq.push(['setCustomVariable', "abc", "123456"]);    //自定义变量
 
-    //测试
-    //_xwq.push(['setCustomVariable', "abc", "123456"]);
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
     g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'_xwpk.js'; s.parentNode.insertBefore(g,s);
 })();
 <!-- End xwpk Code -->
-
-
-//测试
-//var _xwq = _xwq || [];
-//(function() {
-//    var u="//192.168.60.28:8090/Trafficstatistics/";
-//    _xwq.push(["setApiUrl", u + 'HavisitLogController/redLog.do']);
-//    //_xwq.push(['setCustomVariable', "abc", "123456"]);
-//    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-//    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'tj/xwpk.min.js'; s.parentNode.insertBefore(g,s);
-//})();
