@@ -65,10 +65,11 @@ if (typeof _xwq !== 'object') {
 
 window.xwpk = (function(){
     var self = this,
-        uintCookie,             //cookie工具
-        eventGenerator,         //触发器
-        customerAuto = "on",   //设置customerId是否自动从cookie中获取，默认on自动
-        uuid;                   //唯一标识
+        eventGenerator,                     //触发器
+        customerAuto = "on" || "off",     //设置customerId是否自动从cookie中获取，默认on自动
+        uuid;                               //唯一标识
+
+    this.equipmentInfo = {};      //设备信息对象
 
     this.init = function(){
         uuid = getUUID();
@@ -464,10 +465,10 @@ window.xwpk = (function(){
 
             //获取客户sysno
             params["customerId"] = params["customerId"] ? params["customerId"] : (getCustomerId()||"");
-            //获取站点id
-            params["webSiteSysno"] = params["webSiteSysno"] ? params["webSiteSysno"] : (getCookie("WebSiteSysNo")||"");
-            //获取城市id
-            params["deliverySysno"] = params["deliverySysno"] ? params["deliverySysno"] : (getCookie("DeliverySysNo")||"");
+            //获取站点id    webSiteSysno 替换成 webSiteId
+            params["webSiteId"] = params["webSiteId"] ? params["webSiteId"] : (getCookie("WebSiteSysNo")||"");
+            //获取城市id    deliverySysno 替换成 cityId
+            params["cityId"] = params["cityId"] ? params["cityId"] : (getCookie("DeliverySysNo")||"");
 
             for(key in mainParams){
                 var isExist = false;
@@ -496,7 +497,7 @@ window.xwpk = (function(){
                 case "off":
                     return params["customerId"] ? params["customerId"] : "";
                 default :
-                    break;
+                    return "";
             }
         }
 
@@ -505,55 +506,56 @@ window.xwpk = (function(){
          * @returns {string} data={}
          */
         function getEquipmentInfo(){
+
             //推送号
-            params["jpushID"] = "";
+            params["jpushID"] = self.equipmentInfo["jpushID"] || "";
 
             //设备类型
-            params["appType"] = "";
+            params["appType"] = self.equipmentInfo["appType"] || "";
 
             //网络模式
-            params["netModel"] = "";
+            params["netModel"] = self.equipmentInfo["netModel"] || "";
 
             //设备品牌
-            params["devBrand"] = "";
+            params["devBrand"] = self.equipmentInfo["devBrand"] || "";
 
             //APP使用开始时间
-            params["appUseStartTime"] = "";
+            params["appUseStartTime"] = self.equipmentInfo["appUseStartTime"] || "";
 
             //设备型号
-            params["devUnType"] = "";
+            params["devUnType"] = self.equipmentInfo["devUnType"] || "";
 
             //APP渠道
-            params["appChannel"] = "";
+            params["appChannel"] = self.equipmentInfo["appChannel"] || "";
 
             //app版本
-            params["appVersion"] = "";
+            params["appVersion"] = self.equipmentInfo["appVersion"] || "";
 
             //操作系统
-            params["appUseOper"] = "";
+            params["appUseOper"] = self.equipmentInfo["appUseOper"] || "";
 
             //安装时间
-            params["appInstallTime"] = "";
+            params["appInstallTime"] = self.equipmentInfo["appInstallTime"] || "";
 
             //设备ID
-            params["devId"] = "";
+            params["devId"] = self.equipmentInfo["devId"] || "";
 
             //客户端token即devid_time
-            params["token"] = "";
+            params["token"] = self.equipmentInfo["token"] || "";
 
             //系统内部生成的设备号
-            params["sysDevId"] = "";
+            params["sysDevId"] = self.equipmentInfo["sysDevId"] || "";
 
             //设备分辨率
-            params["devReso"] = "";
+            params["devReso"] = self.equipmentInfo["devReso"] || "";
 
             //app使用结束时间
-            params["appUseEndTime"] = "";
+            params["appUseEndTime"] = self.equipmentInfo["appUseEndTime"] || "";
 
             //app使用时间间隔
-            params["interval"] = "";
+            params["interval"] = self.equipmentInfo["interval"] || "";
 
-            return "data="+JSON.stringify(params);
+            return "data=" + encodeURIComponent( JSON.stringify(params) );
         }
 
         /**
@@ -994,6 +996,13 @@ window.xwpk = (function(){
 
                 //发送请求
                 sendRequest( requestList );
+            },
+            /**
+             * 获取到设备信息对象
+             *  @param equipmentInfo
+             */
+            setEquipmentInfo: function(equipmentInfo){
+                self.equipmentInfo = equipmentInfo || {};
             },
             /**
              * 设置app模式
