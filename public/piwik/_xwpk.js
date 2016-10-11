@@ -311,7 +311,22 @@ window.xwpk = (function(){
          */
         function getOS() {
             var sUserAgent = navigator.userAgent;
-            var infoOS = sUserAgent.match(/(\(.*?\))+/g)[0];
+
+            var isIphone = sUserAgent.indexOf("iPhone;") > -1;
+            if(isIphone) return {
+                name: "iPhone IOS",
+                version: sUserAgent.match(/iPhone OS (\d+\_\d)/i)[1].replace("_",".")
+            };
+            var isIpad = sUserAgent.indexOf("iPad") > -1;
+            if(isIpad) return {
+                name: "iPad IOS",
+                version: sUserAgent.match(/iPad OS (\d+\_\d)/i)[1].replace("_",".")
+            };
+            var isIpod = sUserAgent.indexOf("iPod") > -1;
+            if(isIpod) return {
+                name: "iPod IOS",
+                version: sUserAgent.match(/iPhone OS (\d+\_\d)/i)[1].replace("_",".")
+            };
 
             var isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
             if (isMac) return {
@@ -320,24 +335,23 @@ window.xwpk = (function(){
                 version: ""
             };
 
-            var isUnix = (navigator.platform == "X11") && !isWin && !isMac;
-            if (isUnix) return {
-                name: "unix",
-                version: ""
-            };
-
             var isLinux = (String(navigator.platform).indexOf("Linux") > -1);
             if (isLinux){
+                var infoOS = sUserAgent.match(/(\(.*?\))+/g)[0];
+
                 //["(Linux; Android 5.1; OPPO R9tm Build/LMY47I)", "(KHTML, like Gecko)"]
                 var isAndroid = sUserAgent.indexOf('Android') > -1 || sUserAgent.indexOf('Adr') > -1;
-                if( /Android (\d+\.\d)/i.test(infoOS) ) return {
-                    name: "android",
-                    version: infoOS.match(/Android (\d+\.\d)/i)[1]
-                };
-                else return {
-                    name: "linux",
-                    version: ""
-                };
+                if( /Android (\d+\.\d)/i.test(infoOS) ){
+                    return {
+                        name: "android",
+                        version: sUserAgent.match(/Android (\d+\.\d)/i)[1]
+                    };
+                }else{
+                    return {
+                        name: "linux",
+                        version: ""
+                    };
+                }
             }
 
             var isWin = (navigator.platform == "Win32") || (navigator.platform == "Windows");
@@ -379,20 +393,10 @@ window.xwpk = (function(){
                 };
             }
 
-            var isIphone = sUserAgent.indexOf("iPhone;") > -1;
-            if(isIphone) return {
-                name: "iPhone IOS",
-                version: infoOS.match(/iPhone OS (\d+\_\d)/i)[1].replace("_",".")
-            };
-            var isIpad = sUserAgent.indexOf("iPad") > -1;
-            if(isIpad) return {
-                name: "iPad IOS",
-                version: infoOS.match(/iPad OS (\d+\_\d)/i)[1].replace("_",".")
-            };
-            var isIpod = sUserAgent.indexOf("iPod") > -1;
-            if(isIpod) return {
-                name: "iPod IOS",
-                version: infoOS.match(/iPhone OS (\d+\_\d)/i)[1].replace("_",".")
+            var isUnix = (navigator.platform == "X11") && !isWin && !isMac;
+            if (isUnix) return {
+                name: "unix",
+                version: ""
             };
 
             return {
@@ -437,7 +441,16 @@ window.xwpk = (function(){
 
             //操作系统
             if(!params["osName"]){
-                var infoOS = getOS();
+                var infoOS;
+                try{
+                    infoOS = getOS();
+                }catch(e){
+                    params["errorMsg"] = encodeURIComponent( JSON.stringify(e) );
+                    infoOS = {
+                        name: "",
+                        version: ""
+                    };
+                }
                 params["osName"] = infoOS.name;
                 params["osVersion"] = infoOS.version;
             }
@@ -570,7 +583,7 @@ window.xwpk = (function(){
             var pms = param.split("&");
             for(var i=0;i<pms.length;i++){
                 if(pms[i].indexOf("_bitrack")>=0){
-                    return pms[i].split("=")[1];
+                    return pms[i].split("=")[1].match(/\d*/i)[0];
                 }
             }
             return null;
