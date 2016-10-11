@@ -233,6 +233,14 @@ window.xwpk = (function(){
                 return browser;
             }
 
+            //baidu app
+            var isBaidu_app = /alipayclient\/((\d\_(\d+\.)+\d)|(\d\.\d))/i.test(agent);
+            if (isBaidu_app) {
+                browser.exploreName = "alipay";
+                browser.exploreVersion = RegExp['\x241'];
+                return browser;
+            }
+
             //ucbrowser
             var isUC = /ucbrowser\/(\d+\.\d)/i.test(agent) || /ucweb\/(\d+\.\d)/i.test(agent);
             if (isUC) {
@@ -311,21 +319,28 @@ window.xwpk = (function(){
          */
         function getOS() {
             var sUserAgent = navigator.userAgent;
+            if(!sUserAgent) return {
+                name: "",
+                version: ""
+            };
 
             var isIphone = sUserAgent.indexOf("iPhone;") > -1;
             if(isIphone) return {
                 name: "iPhone IOS",
-                version: sUserAgent.match(/iPhone OS (\d+\_\d)/i)[1].replace("_",".")
+                //version: sUserAgent.match(/iPhone OS (\d+\_\d)/i)[1].replace("_",".")
+                version: ""
             };
             var isIpad = sUserAgent.indexOf("iPad") > -1;
             if(isIpad) return {
                 name: "iPad IOS",
-                version: sUserAgent.match(/iPad OS (\d+\_\d)/i)[1].replace("_",".")
+                //version: sUserAgent.match(/iPad OS (\d+\_\d)/i)[1].replace("_",".")
+                version: ""
             };
             var isIpod = sUserAgent.indexOf("iPod") > -1;
             if(isIpod) return {
                 name: "iPod IOS",
-                version: sUserAgent.match(/iPhone OS (\d+\_\d)/i)[1].replace("_",".")
+                //version: sUserAgent.match(/iPhone OS (\d+\_\d)/i)[1].replace("_",".")
+                version: ""
             };
 
             var isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
@@ -337,11 +352,10 @@ window.xwpk = (function(){
 
             var isLinux = (String(navigator.platform).indexOf("Linux") > -1);
             if (isLinux){
-                var infoOS = sUserAgent.match(/(\(.*?\))+/g)[0];
-
+                //var infoOS = sUserAgent.match(/(\(.*?\))+/g)[0];
                 //["(Linux; Android 5.1; OPPO R9tm Build/LMY47I)", "(KHTML, like Gecko)"]
                 var isAndroid = sUserAgent.indexOf('Android') > -1 || sUserAgent.indexOf('Adr') > -1;
-                if( /Android (\d+\.\d)/i.test(infoOS) ){
+                if( /Android (\d+\.\d)/i.test(sUserAgent) ){
                     return {
                         name: "android",
                         version: sUserAgent.match(/Android (\d+\.\d)/i)[1]
@@ -839,6 +853,7 @@ window.xwpk = (function(){
                 iterator = 0; // To avoid JSLint warning of empty block
                 if (typeof callback === 'function') { callback(); }
             };
+
             var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
             //var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
 
