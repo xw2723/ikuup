@@ -591,7 +591,7 @@ window.xwpk = (function(){
          * @returns {*}
          */
         function getBitrack(){
-            var param = location.search.substr(1) || location.hash;
+            var param = location.search.substr(1) + location.hash;
             if(param.indexOf("_bitrack")==-1) return null;
 
             var pms = param.split("&");
