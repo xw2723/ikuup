@@ -427,43 +427,54 @@ window.xwpk = (function(){
             //设置和获取 cookie信息
             settingCookieData();
 
-            //唯一标识
+            // js版本号
+            params["version"] = 2;
+
+            // 唯一标识
             params["uuid"] = params["uuid"] || uuid;
 
-            //标题
+            // 当前页标题
             params["title"] = params["title"] || document.title;
 
-            //将路径中的双引号替换成单引号
-            params["pageUrl"] =  params["pageUrl"] || document.location.href.replace(/(\%22)+/g,"'");
-            params["pageParameter"] = params["pageParameter"] || location.search.substr(1).replace(/(\%22)+/g,"'");
-
-            params["pageDomain"] = params["pageDomain"] || (document.domain + (window.location.port?":"+window.location.port:""));
+            /**
+             * 当前页URL信息搜集
+             * bk：将路径中的双引号替换成单引号    .replace(/(\%22)+/g,"'")
+             * bk：获取端口好     var port = window.location.port ? (":"+window.location.port):"";
+             * @type {string}
+             */
+            params["pageUrl"] =  encodeURIComponent( params["pageUrl"] || document.location.href );
+            params["pageParameter"] = encodeURIComponent( params["pageParameter"] || location.search.substr(1) );
+            params["pageDomain"] = params["pageDomain"] || document.domain || "";
             params["pagePath"] = params["pagePath"] || document.location.pathname;
 
+            /**
+             * 来源URL信息收集
+             * 暂时取消参数字段的收集，来至搜索引擎的参数过长，信息重叠
+             */
             if(!params["referrerUrl"]){
                 var referrer = getDomainPathParameter( getCookie("bi_refer") );
-                params["referrerUrl"] = referrer.referrer;
+                params["referrerUrl"] = encodeURIComponent(referrer.referrer);
                 params["referrerDomain"] = referrer.domain;
-                params["referrerPath"] = referrer.path;
+                params["referrerPath"] = encodeURIComponent(referrer.path);
                 params["referrerParameter"] = "";
             }
 
+            /**
+             * 搜索引擎数据收集
+             * searchEngine：来源搜索引擎类型
+             * searchKeyword：搜索关键字
+             * searchType：搜索引擎所属板块    brand(品专)，sem，seo
+             * source：来源是本站，还是外站，还是搜索引擎   b,w,s
+             */
             if(!params["searchEngine"]){
                 var engineParsing = null;
                 try{
                     engineParsing = searchEngineParsing();
 
-                    //来源搜索引擎类型
                     params["searchEngine"] = engineParsing.getSearchEngine() || "";
-
-                    //搜索关键字
-                    params["searchKeyword"] = engineParsing.getSearchKeyword() || "";
-
-                    //搜索引擎所属板块    brand(品专)，sem，seo
+                    params["searchKeyword"] = encodeURIComponent(engineParsing.getSearchKeyword()) || "";
                     params["searchType"] = engineParsing.getSearchType() || "";
-
-                    //来源是本站，还是外站，还是搜索引擎   b,w,s
-                    params["source"] = params["pageDomain"] == params["referrerDomain"] ? "b" : (engineParsing.getSource() || "");
+                    params["source"] = (params["pageDomain"] == params["referrerDomain"]) ? "b" : (engineParsing.getSource() || "");
                 }catch(e){
                     params["errorMsg"] = "engineParsing-----:"+encodeURIComponent( e.message );
                 }
@@ -528,15 +539,15 @@ window.xwpk = (function(){
             }
 
             //清理参数值的中的特殊符号
-            var clearJSON = function(jsonP){
-                for(var k in jsonP){
-                    var n = jsonP[k];
-                    if(typeof n == "string") jsonP[k] = n.replace(/[\t\n\r\'\"\\\^\*\{\}\L\<\>]/g, '');
-                    if(typeof n == "object") jsonP[k] = clearJSON(jsonP[k]);
-                }
-                return jsonP;
-            };
-            params = clearJSON(params);
+            //var clearJSON = function(jsonP){
+            //    for(var k in jsonP){
+            //        var n = jsonP[k];
+            //        if(typeof n == "string") jsonP[k] = n.replace(/[\t\n\r\'\"\\\^\*\{\}\L\<\>]/g, '');
+            //        if(typeof n == "object") jsonP[k] = clearJSON(jsonP[k]);
+            //    }
+            //    return jsonP;
+            //};
+            //params = clearJSON(params);
 
             return "data="+encodeURIComponent(JSON.stringify(params));
         }
@@ -561,7 +572,6 @@ window.xwpk = (function(){
          * @returns {string} data={}
          */
         function getEquipmentInfo(){
-
             //推送号
             params["jpushID"] = self.equipmentInfo["jpushID"] || "";
 
@@ -801,10 +811,7 @@ window.xwpk = (function(){
         function getDomainPathParameter(referrerUrl){
             var referrer,urls,domain,path,parameter;
 
-            //将路径中的双引号替换成单引号
-            //referrer = referrerUrl || document.referrer.replace(/(\%22)+/g,"'");
-            referrer = referrerUrl || document.referrer;
-
+            referrer = referrerUrl || document.referrer || "";
             if(referrer){
                 urls = referrer.split("?");
                 if(urls.length>=1){
@@ -814,6 +821,7 @@ window.xwpk = (function(){
                     parameter = urls[1];
                 }
             }
+
             return {
                 referrer: referrer||"",
                 domain: domain||"",
@@ -830,15 +838,14 @@ window.xwpk = (function(){
          * @param callback
          */
         function sendRequest(request, callback){
+            var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
+            //var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
+
             var image = new Image(1, 1);
             image.onload = function () {
                 iterator = 0; // To avoid JSLint warning of empty block
                 if (typeof callback === 'function') { callback(); }
             };
-
-            var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
-            //var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
-
             image.src = apiUrl + (apiUrl.indexOf('?') < 0 ? '?' : '&') + request +"&"+ new Date().getTime();
         }
 
@@ -873,21 +880,8 @@ window.xwpk = (function(){
             //上次访问时间
             params["preVisiterTime"] = bltjas[2];
 
-            //var bo = isOnlyAccess(bltjas);
             setCookie("_bltja", bltjas.join("|"), "y5");
             setCookie("_bitj", bltjas[0], "y5");
-        }
-
-        /**
-         * 判断是不是唯一访问
-         * @param bltjas    cookie为bltja的参数组
-         * @returns {boolean}
-         */
-        function isOnlyAccess(bltjas){
-            if(bltjas[1]==bltjas[2] && bltjas[1]==bltjas[3]){
-                return true;
-            }
-            return false;
         }
 
         /**
@@ -980,16 +974,15 @@ window.xwpk = (function(){
              * 初始化组件并发送请求参数
              */
             init: function () {
-                var requestList = "";
-
-                //请求类型 页面请求
+                //请求类型：页面请求
                 params["tjType"] = "pageView";
 
-                //如果是web站或者m站获取统计方式一样
+                var requestList = "";
                 if(appType == "web" || appType == "m"){
+                    //如果是web站或者m站获取信息方式一致
                     requestList = getRequest();
                 }else{
-                    //如果是app，获取设备信息参数
+                    //如果是app内嵌页，获取设备信息参数
                     requestList = getEquipmentInfo();
                 }
 
@@ -1013,10 +1006,10 @@ window.xwpk = (function(){
                     case "m":     //m站
                         appType = type;
                         break;
-                    case "app":     //app站
+                    case "app":   //app站
                         appType = type;
                         break;
-                    default :   //默认web站
+                    default :     //默认web站
                         appType = "web";
                 }
             },
@@ -1026,17 +1019,19 @@ window.xwpk = (function(){
              * @param value    统计数据集，json对象key：value
              */
             trackEvent: function(cat1, cat2, pams){
-                //params["trackEvent"] = JSON.stringify([eventID,value]);
-
                 params["eventCat1"] = cat1;
                 params["eventCat2"] = cat2;
 
+                /**
+                 * 对pams中的字符串进行编码，防止特殊符号对后台转json对象有影响
+                 */
                 for(var key in pams){
-                    pams[key] = pams[key].replace(/(\%22)+/g,"'");
+                    if(isObjectType(pams[key],"String"))
+                        pams[key] = encodeURIComponent(pams[key]);
                 }
                 params["eventParams"] = pams;
 
-                //请求类型 事件请求
+                //请求类型：事件请求
                 params["tjType"] = "event";
 
                 sendRequest( getRequest() );
@@ -1166,6 +1161,8 @@ window.xwpk = (function(){
             if(!biRefer) return false;
 
             //获取到bi_refer后，将其cookie删除
+            setCookie("bi_refer","","s0","");
+            setCookie("bi_refer","","s0","benlai.com");
             delCookie("bi_refer");
 
             //拆分url和params
@@ -1330,7 +1327,8 @@ window.xwpk = (function(){
     var setCookie = function(name,value,time,domain){
         var strsec = getsec(time?time:"d30"),   //默认30天过期
             cookieStr = "",
-            domainStr = ";domain=" + (domain ? domain: document.domain);
+            //domainStr = ";domain=" + (domain ? domain: document.domain);
+            domainStr = ";domain=" + (domain || (domain==""?"":document.domain));
 
         if(strsec){
             var exp = new Date();
@@ -1350,7 +1348,7 @@ window.xwpk = (function(){
     var delCookie = function(name){
         var exp = new Date();
         exp.setTime(exp.getTime() - 1);
-        var cval=getCookie(name);
+        var cval = getCookie(name);
         if(cval!=null)
             document.cookie= name + "=" + cval + ";expires=" + exp.toGMTString();
     };
