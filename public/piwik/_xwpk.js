@@ -427,14 +427,14 @@ window.xwpk = (function(){
             //设置和获取 cookie信息
             settingCookieData();
 
-            // js版本号
+            /**
+             * version： js版本号
+             * uuid：    唯一标识
+             * title：   当前页标题
+             */
             params["version"] = 2;
-
-            // 唯一标识
-            params["uuid"] = params["uuid"] || uuid;
-
-            // 当前页标题
-            params["title"] = params["title"] || document.title;
+            params["uuid"] = params["uuid"] || uuid || "";
+            params["title"] = params["title"] || document.title || "";
 
             /**
              * 当前页URL信息搜集
@@ -442,16 +442,16 @@ window.xwpk = (function(){
              * bk：获取端口好     var port = window.location.port ? (":"+window.location.port):"";
              * @type {string}
              */
-            params["pageUrl"] =  encodeURIComponent( params["pageUrl"] || document.location.href );
-            params["pageParameter"] = encodeURIComponent( params["pageParameter"] || location.search.substr(1) );
+            params["pageUrl"] =  encodeURIComponent( params["pageUrl"] || document.location.href || "" );
+            params["pageParameter"] = encodeURIComponent( params["pageParameter"] || location.search.substr(1) || "" );
             params["pageDomain"] = params["pageDomain"] || document.domain || "";
-            params["pagePath"] = encodeURIComponent( params["pagePath"] || document.location.pathname );
+            params["pagePath"] = encodeURIComponent( params["pagePath"] || document.location.pathname || "" );
 
             /**
              * 来源URL信息收集
              * 暂时取消参数字段的收集，来至搜索引擎的参数过长，信息重叠
              */
-            if(!params["referrerUrl"]){
+            if(params["referrerUrl"] == null){
                 var referrer = getDomainPathParameter( getCookie("bi_refer") );
                 params["referrerUrl"] = encodeURIComponent(referrer.referrer);
                 params["referrerDomain"] = referrer.domain;
@@ -466,11 +466,10 @@ window.xwpk = (function(){
              * searchType：搜索引擎所属板块    brand(品专)，sem，seo
              * source：来源是本站，还是外站，还是搜索引擎   b,w,s
              */
-            if(!params["searchEngine"]){
+            if(params["searchEngine"] == null){
                 var engineParsing = null;
                 try{
                     engineParsing = searchEngineParsing();
-
                     params["searchEngine"] = engineParsing.getSearchEngine() || "";
                     params["searchKeyword"] = encodeURIComponent(engineParsing.getSearchKeyword()) || "";
                     params["searchType"] = engineParsing.getSearchType() || "";
@@ -484,7 +483,7 @@ window.xwpk = (function(){
             params["deviceType"] = params["deviceType"] || getDeviceType();
 
             //操作系统
-            if(!params["osName"]){
+            if(params["osName"] == null){
                 var infoOS;
                 try{
                     infoOS = getOS();
@@ -497,7 +496,7 @@ window.xwpk = (function(){
             }
 
             //浏览器信息
-            if(!params["exploreName"]){
+            if(params["exploreName"] == null){
                 var browserInfo = getBrowserInfo();
                 for(key in browserInfo){
                     params[key] = browserInfo[key];
@@ -507,7 +506,7 @@ window.xwpk = (function(){
             //分辨率
             params["screenPoint"] = params["screenPoint"] || (window.screen.width +"x"+ window.screen.height);
 
-            //获取活动关键字
+            //获取活动关键字 来至url中的 _bitrack 参数
             params["bitrack"] = params["bitrack"] || getBitrack() || "";
 
             /**
@@ -900,12 +899,16 @@ window.xwpk = (function(){
                 }
             }
 
+            /**
+             * visitTime：本次访问第一个pv时间
+             * visiterId：sesstion 访客ID - pv时间+UUID
+             * @type {*}
+             * @private
+             */
             _bltjb =  getCookie("_bltjb");
             if(_bltjb){
-                //本次访问第一个pv时间
                 params["visitTime"] = _bltjb.split("-")[0];
-                //sesstion 访客ID - 会话开始时间+UUID
-                params["visiterId"] = _bltjb;
+                params["visiterId"] = params["visitTime"] +"-"+ uuid;
             }
 
             return isNew;
@@ -1250,7 +1253,6 @@ window.xwpk = (function(){
             //搜索引擎名称
             for(var key in urlToKey){
                 if(urls[0].indexOf(key) >= 0){
-                    //disposeSEParams(urlToKey[key]);
                     searchEngine = urlToKey[key];
                     break;
                 }
@@ -1325,15 +1327,8 @@ window.xwpk = (function(){
                     if(!!searchEngine){
                         source = "s";
                     }else{
-                        var strs = document.location.host.split(".");
-                        var urlMain = strs[strs.length-2] +"."+ strs[strs.length-1];
-
                         var referUrl = biRefer.split("?")[0];
-                        if(referUrl.indexOf(urlMain)>=0){
-                            source = "b";
-                        }else{
-                            source = "w";
-                        }
+                        source = referUrl.indexOf("benlai.com")>=0 ? "b" : "w";
                     }
                 }
                 return source;
