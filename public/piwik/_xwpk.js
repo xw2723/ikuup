@@ -437,10 +437,21 @@ window.xwpk = (function(){
             params["title"] = params["title"] || document.title || "";
 
             /**
+             * visitTime：本次访问第一个pv时间
+             * visiterId：sesstion 访客ID - pv时间+UUID
+             */
+            if(params["visitTime"] == null){
+                var _bltjb =  getCookie("_bltjb");
+                if(!!_bltjb){
+                    params["visitTime"] = _bltjb;
+                    params["visiterId"] = _bltjb +"-"+ uuid;
+                }
+            }
+
+            /**
              * 当前页URL信息搜集
              * bk：将路径中的双引号替换成单引号    .replace(/(\%22)+/g,"'")
              * bk：获取端口好     var port = window.location.port ? (":"+window.location.port):"";
-             * @type {string}
              */
             params["pageUrl"] =  encodeURIComponent( params["pageUrl"] || document.location.href || "" );
             params["pageParameter"] = encodeURIComponent( params["pageParameter"] || location.search.substr(1) || "" );
@@ -514,7 +525,6 @@ window.xwpk = (function(){
              * siteSearchKeyword：站内搜索关键词
              * siteSearchSkuCount：站内搜索SKU数
              * siteSearchTopSku：站内搜索结果的前10个sku编号
-             * @type {*|string}
              */
             params["siteSearchKeyword"] = params["siteSearchKeyword"] || getSiteSearchKeyword() || "";
             params["siteSearchSkuCount"] = params["siteSearchSkuCount"] || getSiteSearchSKUCount() || "";
@@ -525,7 +535,6 @@ window.xwpk = (function(){
              * customerId：客户sysno 来至cookie：userID
              * webSiteId：站点id 来至cookie：WebSiteSysNo
              * cityId：城市id 来至cookie：DeliverySysNo
-             * @type {*|string}
              */
             params["customerId"] = params["customerId"] || getCustomerId() || "";
             params["webSiteId"] = params["webSiteId"] || getCookie("WebSiteSysNo") || "";
@@ -732,10 +741,10 @@ window.xwpk = (function(){
             var nowTTS = new Date().getTime();
 
             //设置是否是新客cookie
-            var newTime = setVisitorsCookie(nowTTS);
+            var uvTime = setVisitorsCookie(nowTTS);
 
             //设置唯一访问cookie
-            setOnlyAccessCookie(newTime);
+            setOnlyAccessCookie(uvTime);
 
             //设置活动统计cookie      已作废，_bitrack参数从url中取
             //setActivityCookie(nowTTS);
@@ -841,37 +850,49 @@ window.xwpk = (function(){
 
         /**
          * 设置唯一访问cookie
-         * @constructor
+         * @param uvTime    uv的第一个pv访问时间
          */
-        function setOnlyAccessCookie(newTime){
-            var bltja, bltjas=null,
-            bltja = getCookie("_bltja"),
-            bitj = getCookie("_bitj");
+        function setOnlyAccessCookie(uvTime){
+            var timeList = [],
+                cookieName = "_bltja",
+                bltja = getCookie(cookieName);
 
-            if(bltja){
-                bltjas = bltja.split("|");
-                if(bltjas[2] != bltjas[3]){
-                    bltjas[2] = bltjas[3];
+            if(!!bltja){
+                timeList = bltja.split("|");
+
+                // 清除cookie中的uuid
+                if(timeList.length > 3){
+                    timeList.shift();
+
+                    //防止当前访问时间没有取到，在发布js的时候改动难免会影响cookie中数据丢失
+                    for(var i=0;i<timeList.length;i++){
+                        if(!timeList[i]){
+                            timeList[i] = uvTime;
+                        }
+                    }
                 }
-                bltjas[3] = newTime?newTime:bltjas[3];
 
-                if(bltjas[1] == bltjas[2] && bltjas[1] == bltjas[3]){
-                    params["isNewVisiter"] = 1; //新客
+                // 如果uvTime和cookie的当前访问时间一致，更新cookie中的上一次访问时间和当前访问时间
+                if(uvTime != timeList[2]){
+                    timeList[1] = timeList[2];
+                    timeList[2] = uvTime;
+                }
+
+                // 获取当前访问时间和uuid生成时间的天数差，如果大于0天就为老客2，否则为新客1
+                if(!getDayByInterval( Number(timeList[2]), Number(timeList[0]) )){
+                    params["isNewVisiter"] = 1;
                 }else{
-                    params["isNewVisiter"] = 2; //老客
+                    params["isNewVisiter"] = 2;
                 }
             }else{
-                bltjas = [];
-                bltjas[0] = uuid;
-                bltjas[1] = bltjas[2] = bltjas[3] = newTime;
-                params["isNewVisiter"] = 1; //新客
+                timeList = [uvTime,uvTime,uvTime];
+                params["isNewVisiter"] = 1;
             }
 
-            //上次访问时间
-            params["preVisiterTime"] = bltjas[2];
+            // 上次访问时间
+            params["preVisiterTime"] = timeList[1];
 
-            setCookie("_bltja", bltjas.join("|"), "y5");
-            setCookie("_bitj", bltjas[0], "y5");
+            setCookie(cookieName, timeList.join("|"), "y5");
         }
 
         /**
@@ -880,38 +901,36 @@ window.xwpk = (function(){
          * _bltjc   当前浏览器有效
          * @param nowTTS   当前时间戳
          */
-        function setVisitorsCookie(nowTTS){
+        function setVisitorsCookie(nowTime){
             var isNew = null,
-                _bltjb = getCookie("_bltjb"),   //30分钟过期
-                _bltjc = getCookie("_bltjc");   //浏览器结束过期
+                shortTime = "s180",
+                sessionTime = "s0",
+                _bltjb = getCookie("_bltjb"),
+                _bltjc = getCookie("_bltjc");
 
             if(!_bltjb && !_bltjc){
-                setCookie("_bltjb", nowTTS + "-" + uuid, "s180");
-                setCookie("_bltjc", nowTTS + "-" + uuid, "s0");
-                isNew = nowTTS;
+                setCookie("_bltjb", nowTime, shortTime);
+                setCookie("_bltjc", nowTime, sessionTime);
+                isNew = nowTime;
             }else{
                 //如果cookie中一个不存在，则生成另一个并覆盖访客id
-                if(_bltjb){
-                    setCookie("_bltjc", _bltjb, "s0");
+                if(!!_bltjb){
+                    if(isNaN( new Date(Number(_bltjb)).getTime() )){
+                        _bltjb = _bltjb.split("-")[0];
+                    }
+                    setCookie("_bltjc", _bltjb, sessionTime);
+                    isNew = _bltjb;
                 }
-                if(_bltjc){
-                    setCookie("_bltjb", _bltjc, "s180");
+                if(!!_bltjc){
+                    if(isNaN( new Date(Number(_bltjc)).getTime() )){
+                        _bltjc = _bltjc.split("-")[0];
+                    }
+                    setCookie("_bltjb", _bltjc, shortTime);
+                    isNew = _bltjc;
                 }
             }
 
-            /**
-             * visitTime：本次访问第一个pv时间
-             * visiterId：sesstion 访客ID - pv时间+UUID
-             * @type {*}
-             * @private
-             */
-            _bltjb =  getCookie("_bltjb");
-            if(_bltjb){
-                params["visitTime"] = _bltjb.split("-")[0];
-                params["visiterId"] = params["visitTime"] +"-"+ uuid;
-            }
-
-            return isNew;
+            return Number(isNew);
         }
 
         /**
@@ -1074,30 +1093,10 @@ window.xwpk = (function(){
              * @param value
              */
             setCustomVariable: function(name,value){
-                var _bjtje, _bjtjes, val;
-                _bjtje = getCookie("_bjtje");
+                var values = [name, value];
 
-                if(_bjtje){
-                    _bjtjes = _bjtje.split("|");
-                    var bo = true;
-                    for(var i=0;i<_bjtjes.length;i++){
-                        var key_val = _bjtjes[i].split("=");
-
-                        if(key_val[0] == name){
-                            _bjtjes[i] = key_val[0] +"="+key_val[1];
-                            bo = false;
-                        }
-                    }
-                    if(bo) _bjtjes.push(name+"="+value);
-                    val = _bjtjes.join("|");
-                }else{
-                    val = uuid +"|"+ name +"="+ value;
-                }
-                setCookie("_bjtje", val, "y5");
-
-                var _pms = val.split("|");
-                _pms.shift();
-                params["cv"] = _pms.join(";");
+                params["cv"] = values.join(";");
+                setCookie("_bjtje", values.join("|"), "y5");
             },
             trackLink: function(){
                 //alert("trackLink");
@@ -1338,16 +1337,41 @@ window.xwpk = (function(){
 
     /**
      *  获取uuid
+     *  先从cookie "_bitj" 中获取uuid，如果没有生成一个新的并存储到 "_bitj" 的cookie中
      * @returns {*} uuid
      */
     var getUUID = function(){
-        var _bltja = getCookie("_bltja");
+        var _uuid,_bitj;
 
-        if(_bltja && _bltja.split("|")[0]){
-            return _bltja.split("|")[0];
+        _bitj = getCookie("_bitj");
+        if(!!_bitj){
+            _uuid = _bitj;
+        }else{
+            _uuid = Math.uuid();
         }
 
-        return Math.uuid();
+        setCookie("_bitj", _uuid, "y5");
+        return _uuid;
+    };
+
+    /**
+     * 根据新老时间获取时间天数差
+     * @param newTime   新时间,可以是时间戳，也可以是时间格式字符串
+     * @param oldTime   老时间,可以是时间戳，也可以是时间格式字符串
+     * @returns {days}  天数 时间没有转换成功为null，0为同一天
+     */
+    var getDayByInterval = function(newTime,oldTime){
+        var newTimeStamp = new Date(newTime).getTime();
+        var oldTimeStamp = new Date(oldTime).getTime();
+        var daysStamp = 24*60*60*1000;
+        var days = null;
+
+        if(!isNaN(newTimeStamp) && !isNaN(oldTimeStamp)){
+            var newDays = Math.floor( newTimeStamp/daysStamp);
+            var oldDays = Math.floor( oldTimeStamp/daysStamp);
+            days = newDays - oldDays ;
+        }
+        return days;
     };
 
     /**
