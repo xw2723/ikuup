@@ -879,7 +879,7 @@ window.xwpk = (function(){
                 }
 
                 // 获取当前访问时间和uuid生成时间的天数差，如果大于0天就为老客2，否则为新客1
-                if(!getDayByInterval( Number(timeList[2]), Number(timeList[0]) )){
+                if(!getDayByInterval( getYMDToTime(timeList[2]), getYMDToTime(timeList[0]) )){
                     params["isNewVisiter"] = 1;
                 }else{
                     params["isNewVisiter"] = 2;
@@ -1352,6 +1352,24 @@ window.xwpk = (function(){
 
         setCookie("_bitj", _uuid, "y5");
         return _uuid;
+    };
+
+    /**
+     * 获取年月日格式的数据
+     * @param strTime
+     * @returns {string}
+     */
+    var getYMDToTime = function(strTime){
+        var ymd = Number(strTime),
+            date = null;
+
+        if(isNaN( ymd )){
+            date = new Date(strTime);
+        }else{
+            date = new Date(ymd);
+        }
+
+        return date.getFullYear()+"/"+(date.getMonth()+1)+"/"+date.getDate();
     };
 
     /**
