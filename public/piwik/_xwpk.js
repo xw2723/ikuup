@@ -453,7 +453,7 @@ window.xwpk = (function(){
              * bk：将路径中的双引号替换成单引号    .replace(/(\%22)+/g,"'")
              * bk：获取端口好     var port = window.location.port ? (":"+window.location.port):"";
              */
-            params["pageUrl"] =  encodeURIComponent( params["pageUrl"] || document.location.href || "" );
+            params["pageUrl"] =  encodeURIComponent( params["pageUrl"] || decodeURIComponent(document.location.href) || "" );
             params["pageParameter"] = encodeURIComponent( params["pageParameter"] || location.search.substr(1) || "" );
             params["pageDomain"] = params["pageDomain"] || document.domain || "";
             params["pagePath"] = encodeURIComponent( params["pagePath"] || document.location.pathname || "" );
@@ -526,7 +526,7 @@ window.xwpk = (function(){
              * siteSearchSkuCount：站内搜索SKU数
              * siteSearchTopSku：站内搜索结果的前10个sku编号
              */
-            params["siteSearchKeyword"] = params["siteSearchKeyword"] || getSiteSearchKeyword() || "";
+            params["siteSearchKeyword"] = params["siteSearchKeyword"] || encodeURIComponent( (getSiteSearchKeyword()||"") );
             params["siteSearchSkuCount"] = params["siteSearchSkuCount"] || getSiteSearchSKUCount() || "";
             params["siteSearchTopSku"] = params["siteSearchTopSku"] || getSiteSearchTopSku() || "";
 
@@ -577,53 +577,83 @@ window.xwpk = (function(){
          * @returns {string} data={}
          */
         function getEquipmentInfo(){
+            //设备号
+            params["uuid"] = self.equipmentInfo["uuid"] || "";
+
+            //当前app页面统计请求发送的时间
+            params["visitTime"] = self.equipmentInfo["visitTime"] || "";
+
+            //会话id  时间戳+设备号
+            params["visiterId"] = self.equipmentInfo["visiterId"] || "";
+
+            //安装当天（自然日）使用为新客，否则为老客；新客：1，老客：2
+            params["isNewVisiter"] = self.equipmentInfo["isNewVisiter"] || "";
+
+            //统计请求类型;pageView:页面初始请求；event:事件发送请求
+            params["tjType"] = self.equipmentInfo["tjType"] || "";
+
+            //页面标题
+            params["title"] = self.equipmentInfo["title"] || "";
+
+            //当前页标识
+            params["pageUrl"] = self.equipmentInfo["pageUrl"] || "";
+
+            //来源页标识
+            params["referrerUrl"] = self.equipmentInfo["referrerUrl"] || "";
+
+            //当前app所使用的系统名称；ios/android
+            params["osName"] = self.equipmentInfo["osName"] || "";
+
+            //系统版本号
+            params["osVersion"] = self.equipmentInfo["osVersion"] || "";
+
+            //屏幕分辨率
+            params["screenPoint"] = self.equipmentInfo["screenPoint"] || "";
+
+            //待定
+            //params["bitrack"] = self.equipmentInfo["bitrack"] || "";
+
+            //app获取，站内搜索关键词
+            //params["siteSearchKeyword"] = self.equipmentInfo["siteSearchKeyword"] || "";
+
+            //app获取，站内搜索SKU数
+            //params["siteSearchSkuCount"] = self.equipmentInfo["siteSearchSkuCount"] || "";
+
+            //app获取，站内搜索结果的前10个sku编号，例如：123,234,345
+            //params["siteSearchSkuCount"] = self.equipmentInfo["siteSearchSkuCount"] || "";
+
+            //客户sysno
+            params["customerId"] = self.equipmentInfo["customerId"] || "";
+
+            //站点id;例如：华南，华北的编号
+            params["webSiteId"] = self.equipmentInfo["webSiteId"] || "";
+
+            //城市id
+            params["cityId"] = self.equipmentInfo["cityId"] || "";
+
             //推送号
             params["jpushID"] = self.equipmentInfo["jpushID"] || "";
 
-            //设备类型
-            params["appType"] = self.equipmentInfo["appType"] || "";
-
-            //网络模式
+            //网络模式， 待定(移动，联通)
             params["netModel"] = self.equipmentInfo["netModel"] || "";
 
-            //设备品牌
+            //设备品牌名称
             params["devBrand"] = self.equipmentInfo["devBrand"] || "";
 
-            //APP使用开始时间
-            params["appUseStartTime"] = self.equipmentInfo["appUseStartTime"] || "";
-
-            //设备型号
-            params["devUnType"] = self.equipmentInfo["devUnType"] || "";
-
-            //APP渠道
+            //app渠道
             params["appChannel"] = self.equipmentInfo["appChannel"] || "";
 
-            //app版本
+            //app版本号
             params["appVersion"] = self.equipmentInfo["appVersion"] || "";
 
-            //操作系统
-            params["appUseOper"] = self.equipmentInfo["appUseOper"] || "";
-
-            //安装时间
+            //app安装时间，时间戳
             params["appInstallTime"] = self.equipmentInfo["appInstallTime"] || "";
 
-            //设备ID
-            params["devId"] = self.equipmentInfo["devId"] || "";
-
-            //客户端token即devid_time
+            //客户端token
             params["token"] = self.equipmentInfo["token"] || "";
 
-            //系统内部生成的设备号
-            params["sysDevId"] = self.equipmentInfo["sysDevId"] || "";
-
-            //设备分辨率
-            params["devReso"] = self.equipmentInfo["devReso"] || (window.screen.width +"x"+ window.screen.height) || "";
-
-            //app使用结束时间
-            params["appUseEndTime"] = self.equipmentInfo["appUseEndTime"] || "";
-
-            //app使用时间间隔
-            params["interval"] = self.equipmentInfo["interval"] || "";
+            //app使用时间间隔，待定
+            //params["interval"] = self.equipmentInfo["interval"] || "";
 
             return "data=" + encodeURIComponent( JSON.stringify(params) );
         }
@@ -634,7 +664,7 @@ window.xwpk = (function(){
          * @returns {*}
          */
         function getBitrack(){
-            var isBitrack = /_bitrack=((\d)+)/i.test( location.search.substr(1) + location.hash );
+            var isBitrack = /_bitrack=((\d)+)/i.test( decodeURIComponent(location.search.substr(1) + location.hash) );
             if(!!isBitrack)
                 return RegExp['\x241'];
             return null;
@@ -990,14 +1020,13 @@ window.xwpk = (function(){
                 //请求类型：页面请求
                 params["tjType"] = "pageView";
 
-                var requestList = "";
-                if(appType == "web" || appType == "m"){
-                    //如果是web站或者m站获取信息方式一致
-                    requestList = getRequest();
-                }else{
-                    //如果是app内嵌页，获取设备信息参数
-                    requestList = getEquipmentInfo();
-                }
+                /**
+                 * 参数获取方式：web站和m站 有别于 app
+                 * web站或者m站 由getRequest()获取参数，
+                 * app原生页由自己获取统计参数并发送数据;如果是app内嵌页，app由getEquipmentInfo()获取参数
+                 * 参数格式始终一致
+                 */
+                var requestList = (appType == "app") ? getEquipmentInfo() : getRequest();
 
                 //发送请求
                 sendRequest( requestList );
@@ -1047,7 +1076,16 @@ window.xwpk = (function(){
                 //请求类型：事件请求
                 params["tjType"] = "event";
 
-                sendRequest( getRequest() );
+                /**
+                 * 参数获取方式：web站和m站 有别于 app
+                 * web站或者m站 由getRequest()获取参数，
+                 * app原生页由自己获取统计参数并发送数据;如果是app内嵌页，app由getEquipmentInfo()获取参数
+                 * 参数格式始终一致
+                 */
+                var requestList = (appType == "app") ? getEquipmentInfo() : getRequest();
+
+                //发送请求
+                sendRequest( requestList );
             },
             /**
              * 设置customerId，未设置从cookie中获取
@@ -1065,18 +1103,17 @@ window.xwpk = (function(){
             },
             /**
              * 设置接收数据api url
+             * bk：params["apiUrl"] = url;
              * @param url
              */
             setApiUrl: function(url){
                 apiUrl = url;
-                //params["apiUrl"] = url;
             },
             /**
              * 设置站点id
-             * @param siteId
+             * @param siteId 站点编号
              */
             setSiteId: function(siteId){
-                //逻辑有待进一步调整，以下为测试写法
                 params["siteId"] = siteId;
             },
             /**
@@ -1098,6 +1135,9 @@ window.xwpk = (function(){
                 params["cv"] = values.join(";");
                 setCookie("_bjtje", values.join("|"), "y5");
             },
+            /**
+             * 测试，暂无用处
+             */
             trackLink: function(){
                 //alert("trackLink");
             }
