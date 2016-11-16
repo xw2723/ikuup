@@ -424,74 +424,38 @@ window.xwpk = (function(){
          * @returns {string}
          */
         function getRequest(){
-            //设置和获取 cookie信息
-            settingCookieData();
-
-            /**
-             * version： js版本号
-             * uuid：    唯一标识
-             * title：   当前页标题
-             */
+            //version： js版本号
             params["version"] = 2;
-            params["uuid"] = params["uuid"] || uuid || "";
+
+            /**
+             * 通用参数
+             * title：页面标签
+             * pageUrl：当前页url
+             * screenPoint：分辨率
+             * bitrack：获取活动关键字 来至url中的 _bitrack 参数
+             * siteSearchKeyword：站内搜索关键词
+             * siteSearchSkuCount：站内搜索SKU数
+             * siteSearchTopSku：站内搜索结果的前10个sku编号
+             * @type {*|string|string}
+             */
             params["title"] = params["title"] || document.title || "";
-
-            /**
-             * visitTime：本次访问第一个pv时间
-             * visiterId：sesstion 访客ID - pv时间+UUID
-             */
-            if(params["visitTime"] == null){
-                var _bltjb =  getCookie("_bltjb");
-                if(!!_bltjb){
-                    params["visitTime"] = _bltjb;
-                    params["visiterId"] = _bltjb +"-"+ uuid;
-                }
-            }
-
-            /**
-             * 当前页URL信息搜集
-             * bk：将路径中的双引号替换成单引号    .replace(/(\%22)+/g,"'")
-             * bk：获取端口好     var port = window.location.port ? (":"+window.location.port):"";
-             */
             params["pageUrl"] =  encodeURIComponent( params["pageUrl"] || decodeURIComponent(document.location.href) || "" );
-            params["pageParameter"] = encodeURIComponent( params["pageParameter"] || location.search.substr(1) || "" );
-            params["pageDomain"] = params["pageDomain"] || document.domain || "";
-            params["pagePath"] = encodeURIComponent( params["pagePath"] || document.location.pathname || "" );
+            params["screenPoint"] = params["screenPoint"] || (window.screen.width +"x"+ window.screen.height);
+            params["bitrack"] = params["bitrack"] || getBitrack() || "";
+            //站内搜索信息搜集
+            params["siteSearchKeyword"] = params["siteSearchKeyword"] || encodeURIComponent( (getSiteSearchKeyword()||"") );
+            params["siteSearchSkuCount"] = params["siteSearchSkuCount"] || getSiteSearchSKUCount() || "";
+            params["siteSearchTopSku"] = params["siteSearchTopSku"] || getSiteSearchTopSku() || "";
 
             /**
-             * 来源URL信息收集
-             * 暂时取消参数字段的收集，来至搜索引擎的参数过长，信息重叠
+             * 搜集cookie中的数据
+             * customerId：客户sysno 来至cookie：userID
+             * webSiteId：站点id 来至cookie：WebSiteSysNo
+             * cityId：城市id 来至cookie：DeliverySysNo
              */
-            if(params["referrerUrl"] == null){
-                var referrer = getDomainPathParameter( getCookie("bi_refer") );
-                params["referrerUrl"] = encodeURIComponent(referrer.referrer);
-                params["referrerDomain"] = referrer.domain;
-                params["referrerPath"] = encodeURIComponent(referrer.path);
-                params["referrerParameter"] = "";
-            }
-
-            /**
-             * 搜索引擎数据收集
-             * searchEngine：来源搜索引擎类型
-             * searchKeyword：搜索关键字
-             * searchType：搜索引擎所属板块    brand(品专)，sem，seo
-             * source：来源是本站，还是外站，还是搜索引擎   b,w,s
-             */
-            if(params["searchEngine"] == null){
-                var engineParsing = null;
-                try{
-                    engineParsing = searchEngineParsing();
-                    params["searchEngine"] = engineParsing.getSearchEngine() || "";
-                    params["searchKeyword"] = encodeURIComponent(engineParsing.getSearchKeyword()) || "";
-                    params["searchType"] = engineParsing.getSearchType() || "";
-                    params["source"] = (params["pageDomain"] == params["referrerDomain"]) ? "b" : (engineParsing.getSource() || "");
-                }catch(e){
-                    params["errorMsg"] = "engineParsing-----:"+encodeURIComponent( e.message );
-                }
-            }
-
-            //pc or mobile
-            params["deviceType"] = params["deviceType"] || getDeviceType();
+            params["customerId"] = params["customerId"] || getCustomerId() || "";
+            params["webSiteId"] = params["webSiteId"] || getCookie("WebSiteSysNo") || "";
+            params["cityId"] = params["cityId"] || getCookie("DeliverySysNo") || "";
 
             //操作系统
             if(params["osName"] == null){
@@ -506,39 +470,84 @@ window.xwpk = (function(){
                 params["osVersion"] = infoOS.version;
             }
 
-            //浏览器信息
-            if(params["exploreName"] == null){
-                var browserInfo = getBrowserInfo();
-                for(key in browserInfo){
-                    params[key] = browserInfo[key];
+            /**
+             *  app内嵌页：设备信息参数由app注入给内嵌页，然后提供给统计js
+             *  web站和m站：所有参数有js获取
+             */
+            if(appType == "app"){
+                //暂定 当前访问时间
+                params["visitTime"] = params["visitTime"] || new Date().getTime();
+            }else{
+                //设置和获取 cookie信息
+                settingCookieData();
+
+                //uuid：    唯一标识
+                params["uuid"] = params["uuid"] || uuid || "";
+
+                /**
+                 * visitTime：本次访问第一个pv时间
+                 * visiterId：sesstion 访客ID - pv时间+UUID
+                 */
+                if(params["visitTime"] == null){
+                    var _bltjb =  getCookie("_bltjb");
+                    if(!!_bltjb){
+                        params["visitTime"] = _bltjb;
+                        params["visiterId"] = _bltjb +"-"+ uuid;
+                    }
+                }
+
+                /**
+                 * 当前页URL信息搜集
+                 * bk：将路径中的双引号替换成单引号    .replace(/(\%22)+/g,"'")
+                 * bk：获取端口好     var port = window.location.port ? (":"+window.location.port):"";
+                 */
+                params["pageParameter"] = encodeURIComponent( params["pageParameter"] || location.search.substr(1) || "" );
+                params["pageDomain"] = params["pageDomain"] || document.domain || "";
+                params["pagePath"] = encodeURIComponent( params["pagePath"] || document.location.pathname || "" );
+
+                /**
+                 * 来源URL信息收集
+                 * 暂时取消参数字段的收集，来至搜索引擎的参数过长，信息重叠
+                 */
+                if(params["referrerUrl"] == null){
+                    var referrer = getDomainPathParameter( getCookie("bi_refer") );
+                    params["referrerUrl"] = encodeURIComponent(referrer.referrer);
+                    params["referrerDomain"] = referrer.domain;
+                    params["referrerPath"] = encodeURIComponent(referrer.path);
+                    params["referrerParameter"] = "";
+                }
+
+                /**
+                 * 搜索引擎数据收集
+                 * searchEngine：来源搜索引擎类型
+                 * searchKeyword：搜索关键字
+                 * searchType：搜索引擎所属板块    brand(品专)，sem，seo
+                 * source：来源是本站，还是外站，还是搜索引擎   b,w,s
+                 */
+                if(params["searchEngine"] == null){
+                    var engineParsing = null;
+                    try{
+                        engineParsing = searchEngineParsing();
+                        params["searchEngine"] = engineParsing.getSearchEngine() || "";
+                        params["searchKeyword"] = encodeURIComponent(engineParsing.getSearchKeyword()) || "";
+                        params["searchType"] = engineParsing.getSearchType() || "";
+                        params["source"] = (params["pageDomain"] == params["referrerDomain"]) ? "b" : (engineParsing.getSource() || "");
+                    }catch(e){
+                        params["errorMsg"] = "engineParsing-----:"+encodeURIComponent( e.message );
+                    }
+                }
+
+                //pc or mobile
+                params["deviceType"] = params["deviceType"] || getDeviceType();
+
+                //浏览器信息
+                if(params["exploreName"] == null){
+                    var browserInfo = getBrowserInfo();
+                    for(key in browserInfo){
+                        params[key] = browserInfo[key];
+                    }
                 }
             }
-
-            //分辨率
-            params["screenPoint"] = params["screenPoint"] || (window.screen.width +"x"+ window.screen.height);
-
-            //获取活动关键字 来至url中的 _bitrack 参数
-            params["bitrack"] = params["bitrack"] || getBitrack() || "";
-
-            /**
-             * 站内搜索信息搜集
-             * siteSearchKeyword：站内搜索关键词
-             * siteSearchSkuCount：站内搜索SKU数
-             * siteSearchTopSku：站内搜索结果的前10个sku编号
-             */
-            params["siteSearchKeyword"] = params["siteSearchKeyword"] || encodeURIComponent( (getSiteSearchKeyword()||"") );
-            params["siteSearchSkuCount"] = params["siteSearchSkuCount"] || getSiteSearchSKUCount() || "";
-            params["siteSearchTopSku"] = params["siteSearchTopSku"] || getSiteSearchTopSku() || "";
-
-            /**
-             * 搜集cookie中的数据
-             * customerId：客户sysno 来至cookie：userID
-             * webSiteId：站点id 来至cookie：WebSiteSysNo
-             * cityId：城市id 来至cookie：DeliverySysNo
-             */
-            params["customerId"] = params["customerId"] || getCustomerId() || "";
-            params["webSiteId"] = params["webSiteId"] || getCookie("WebSiteSysNo") || "";
-            params["cityId"] = params["cityId"] || getCookie("DeliverySysNo") || "";
 
             //将主要的参数合并到发送参数中
             for(key in mainParams){
@@ -583,14 +592,14 @@ window.xwpk = (function(){
             //当前app页面统计请求发送的时间
             params["visitTime"] = self.equipmentInfo["visitTime"] || "";
 
-            //会话id  时间戳+设备号
+            //会话id  app token
             params["visiterId"] = self.equipmentInfo["visiterId"] || "";
 
             //安装当天（自然日）使用为新客，否则为老客；新客：1，老客：2
-            params["isNewVisiter"] = self.equipmentInfo["isNewVisiter"] || "";
+            //params["isNewVisiter"] = self.equipmentInfo["isNewVisiter"] || "";
 
             //统计请求类型;pageView:页面初始请求；event:事件发送请求
-            params["tjType"] = self.equipmentInfo["tjType"] || "";
+            //params["tjType"] = self.equipmentInfo["tjType"] || "";
 
             //页面标题
             params["title"] = self.equipmentInfo["title"] || "";
@@ -609,18 +618,6 @@ window.xwpk = (function(){
 
             //屏幕分辨率
             params["screenPoint"] = self.equipmentInfo["screenPoint"] || "";
-
-            //待定
-            //params["bitrack"] = self.equipmentInfo["bitrack"] || "";
-
-            //app获取，站内搜索关键词
-            //params["siteSearchKeyword"] = self.equipmentInfo["siteSearchKeyword"] || "";
-
-            //app获取，站内搜索SKU数
-            //params["siteSearchSkuCount"] = self.equipmentInfo["siteSearchSkuCount"] || "";
-
-            //app获取，站内搜索结果的前10个sku编号，例如：123,234,345
-            //params["siteSearchSkuCount"] = self.equipmentInfo["siteSearchSkuCount"] || "";
 
             //客户sysno
             params["customerId"] = self.equipmentInfo["customerId"] || "";
@@ -671,44 +668,63 @@ window.xwpk = (function(){
         }
 
         /**
-         * sku top10编号 page15
+         * sku top20编号 page15
          * @returns {*}
          */
         function getSiteSearchTopSku(){
             if(!params["siteSearchKeyword"]) return null;
 
+            var parentNode = null,
+                eventNodes = null,
+                goodsIds = null;
+
             if(appType == "web"){
-                var listBox = document.getElementById("Content");
-                if(listBox){
-                    var htmlstr = listBox.innerHTML;
-                    if(htmlstr){
-                        var itemRegs = htmlstr.match(/(product="\d+"\s+data-type="AddCartBtn")|(data-type="AddCartBtn"\s+product="\d+")/g);
-                        if(itemRegs.length>=1){
-                            var tops = [];
-                            for(var i=0;i<itemRegs.length;i++){
-                                if(i==10) break;
-                                var n =  itemRegs[i];
-                                tops.push(n.match(/\d+/));
-                            }
-                            return tops.join(",");
-                        }
+                //id = SearchBox Content
+                parentNode = document.getElementById("Content");
+                if(!!parentNode && !!parentNode.innerHTML){
+                    goodsIds = parentNode.innerHTML.match(/product=" *\d+"/g);
+                    if(goodsIds.length){
+                        goodsIds = goodsIds.slice(0,20).join(",");
+                        goodsIds = goodsIds.match(/\d+/g).join(",");
                     }
                 }
+
+                if(!!$ && !!$().find){
+                    eventNodes = $(parentNode).find(".box");
+                }
             }else{
-                var goodsBox = document.getElementById("productListUL");
-                if(goodsBox){
-                    var goodsIds = goodsBox.innerHTML.match(/id="pdList_product_\d+"/g);
-                    if(goodsIds.length>=0){
-                        var goodsSKU = [];
-                        for(var i=0;i<goodsIds.length;i++){
-                            goodsSKU.push( goodsIds[i].match(/\d+/) );
-                        }
-                        return goodsSKU.join(",");
+                //id = scroller thelist
+                parentNode = document.getElementById("thelist");
+                if(!!parentNode && !!parentNode.innerHTML){
+                    goodsIds = parentNode.innerHTML.match(/addProductToCart\(\d+/g);
+                    if(goodsIds.length>0){
+                        goodsIds = goodsIds.slice(0,20).join(",");
+                        goodsIds = goodsIds.match(/\d+/g).join(",");
                     }
+                }
+
+                if(!!$ && !!$().children){
+                    eventNodes = $(parentNode).children();
                 }
             }
 
-            return null;
+            try{
+                if(!!parentNode && !!eventNodes){
+                    if(!!$ && !!$().delegate){
+                        $(parentNode).delegate(eventNodes, "click", function(){
+                            //事件
+                            params["tjType"] = "event";
+
+                            //发送请求
+                            sendRequest( getRequest() );
+                        });
+                    }
+                }
+            }catch(e){
+                params["errorMsg"] = e.message;
+            }
+
+            return goodsIds;
         }
 
         /**
@@ -724,17 +740,15 @@ window.xwpk = (function(){
                 if(searchBox){
                     var searchBoxText = searchBox.innerText;
                     if(searchBoxText){
-                        var regs = searchBoxText.match(/[相关商品]+\d+[个]/);
+                        var regs = searchBoxText.match(/[相关商品]+\s*\d+\s*[个]/);
                         count = regs[0]?regs[0].match(/\d+/)[0]:null;
                     }
                 }
             }else{
-                var goodsBox = document.getElementById("productListUL");
-                if(goodsBox){
-                    var items = goodsBox.getElementsByClassName("buy");
-                    if(items.length>0){
-                        count = items.length;
-                    }
+                var goodsBox = document.getElementById("scroller");
+                if(!!goodsBox && !!goodsBox.innerHTML){
+                    var items = goodsBox.innerHTML.match(/class="price"/g);
+                    count = (items.length>0) ? items.length : null;
                 }
             }
             return count;
@@ -867,8 +881,8 @@ window.xwpk = (function(){
          * @param callback
          */
         function sendRequest(request, callback){
-            var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
-            //var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
+            //var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
+            var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
 
             var image = new Image(1, 1);
             image.onload = function () {
@@ -1020,23 +1034,42 @@ window.xwpk = (function(){
                 //请求类型：页面请求
                 params["tjType"] = "pageView";
 
-                /**
-                 * 参数获取方式：web站和m站 有别于 app
-                 * web站或者m站 由getRequest()获取参数，
-                 * app原生页由自己获取统计参数并发送数据;如果是app内嵌页，app由getEquipmentInfo()获取参数
-                 * 参数格式始终一致
-                 */
-                var requestList = (appType == "app") ? getEquipmentInfo() : getRequest();
-
                 //发送请求
-                sendRequest( requestList );
+                sendRequest( getRequest() );
             },
             /**
-             * 获取到设备信息对象
+             * 获取到设备信息
              *  @param equipmentInfo
              */
             setEquipmentInfo: function(equipmentInfo){
-                self.equipmentInfo = equipmentInfo || {};
+                //self.equipmentInfo = equipmentInfo || {};
+
+                //设备号
+                params["uuid"] = equipmentInfo["uuid"] || "";
+
+                //会话id， app token
+                params["visiterId"] = equipmentInfo["visiterId"] || "";
+
+                //来源页标识
+                params["referrerUrl"] = equipmentInfo["referrerUrl"] || "";
+
+                //推送号
+                params["jpushID"] = equipmentInfo["jpushID"] || "";
+
+                //网络模式， 待定(移动，联通)
+                params["netModel"] = equipmentInfo["netModel"] || "";
+
+                //设备品牌名称
+                params["devBrand"] = equipmentInfo["devBrand"] || "";
+
+                //app渠道
+                params["appChannel"] = equipmentInfo["appChannel"] || "";
+
+                //app版本号
+                params["appVersion"] = equipmentInfo["appVersion"] || "";
+
+                //app安装时间
+                params["appInstallTime"] = equipmentInfo["appInstallTime"] || "";
             },
             /**
              * 设置app模式
@@ -1076,16 +1109,8 @@ window.xwpk = (function(){
                 //请求类型：事件请求
                 params["tjType"] = "event";
 
-                /**
-                 * 参数获取方式：web站和m站 有别于 app
-                 * web站或者m站 由getRequest()获取参数，
-                 * app原生页由自己获取统计参数并发送数据;如果是app内嵌页，app由getEquipmentInfo()获取参数
-                 * 参数格式始终一致
-                 */
-                var requestList = (appType == "app") ? getEquipmentInfo() : getRequest();
-
                 //发送请求
-                sendRequest( requestList );
+                sendRequest( getRequest() );
             },
             /**
              * 设置customerId，未设置从cookie中获取
