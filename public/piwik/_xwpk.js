@@ -711,9 +711,39 @@ window.xwpk = (function(){
             try{
                 if(!!parentNode && !!eventNodes){
                     if(!!$ && !!$().delegate){
-                        $(parentNode).delegate(eventNodes, "click", function(){
+                        $(parentNode).delegate(eventNodes, "click", function(e){
+                            var innerHtml = "",
+                                goodsName = "",
+                                sku = "";
+
+                            if(appType == "web"){
+                                if($(e.target).hasClass(".box")){
+                                    innerHtml = $(e.target).html();
+                                }else{
+                                    innerHtml = $(e.target).parents(".box").html();
+                                }
+
+                                goodsName = innerHtml.match(/<p class="name">.*?(<font>(.*?)<\/font>).*?<\/p>?/)[2];
+                                sku = innerHtml.match(/product=['"]*\s*(\d+)\s*['"]*/)[1];
+                            }else{
+                                if(e.target.tagName == "dl"){
+                                    innerHtml = $(e.target).html();
+                                }else{
+                                    innerHtml = $(e.target).parents("dl").html();
+                                }
+
+                                goodsName = innerHtml.match(/<p class="name">(.*?)<\/p>/)[1];
+                                sku = innerHtml.match(/addProductToCart\((\d+)/)[1];
+                            }
+
                             //事件
                             params["tjType"] = "event";
+                            params["eventCat1"] = "搜索商品";
+                            params["eventCat2"] = "商品点击";
+                            params["eventParams"] = {
+                                goodsName: encodeURIComponent( goodsName ),
+                                sku: sku
+                            };
 
                             //发送请求
                             sendRequest( getRequest() );
@@ -721,7 +751,7 @@ window.xwpk = (function(){
                     }
                 }
             }catch(e){
-                params["errorMsg"] = e.message;
+                params["errorMsg"] = "getSiteSearchTopSku-------"+e.message;
             }
 
             return goodsIds;
@@ -881,8 +911,8 @@ window.xwpk = (function(){
          * @param callback
          */
         function sendRequest(request, callback){
-            //var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
-            var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
+            var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
+            //var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
 
             var image = new Image(1, 1);
             image.onload = function () {
@@ -1197,7 +1227,7 @@ window.xwpk = (function(){
                         var a = /mac os x (\d+\.\d+)/i.test(user_agent);
                         return { name: "mac", version: RegExp['\x241'] };
                     }catch(e){
-                        eventGenerator.setParamVal("errorMsg", e.message);
+                        eventGenerator.setParamVal("errorMsg", "getOS---mac---"+e.message);
                     }
                     return { name: "mac", version: "" };
                 }
