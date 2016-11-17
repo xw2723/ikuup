@@ -769,7 +769,7 @@ window.xwpk = (function(){
             params["eventParams"] = {
                 goodsName: encodeURIComponent( goodsName ),
                 sku: sku,
-                href: encodeURIComponent( href )
+                url: encodeURIComponent( href )
             };
 
             //发送请求
