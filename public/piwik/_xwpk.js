@@ -675,7 +675,6 @@ window.xwpk = (function(){
             if(!params["siteSearchKeyword"]) return null;
 
             var parentNode = null,
-                eventNodes = null,
                 goodsIds = null;
 
             if(appType == "web"){
@@ -689,8 +688,12 @@ window.xwpk = (function(){
                     }
                 }
 
-                if(!!$ && !!$().find){
-                    eventNodes = $(parentNode).find(".box");
+                try{
+                    if(!!$ && !!$().find){
+                        $(parentNode).delegate(".box", "click", ["IMG","FONT","SPAN"], goodsClickCallBack);
+                    }
+                }catch(e){
+                    params["errorMsg"] = "getSiteSearchTopSku------" + encodeURIComponent( e.message );
                 }
             }else{
                 //id = scroller thelist
@@ -703,58 +706,74 @@ window.xwpk = (function(){
                     }
                 }
 
-                if(!!$ && !!$().children){
-                    eventNodes = $(parentNode).children();
-                }
-            }
-
-            try{
-                if(!!parentNode && !!eventNodes){
-                    if(!!$ && !!$().delegate){
-                        $(parentNode).delegate(eventNodes, "click", function(e){
-                            var innerHtml = "",
-                                goodsName = "",
-                                sku = "";
-
-                            if(appType == "web"){
-                                if($(e.target).hasClass(".box")){
-                                    innerHtml = $(e.target).html();
-                                }else{
-                                    innerHtml = $(e.target).parents(".box").html();
-                                }
-
-                                goodsName = innerHtml.match(/<p class="name">.*?(<font>(.*?)<\/font>).*?<\/p>?/)[2];
-                                sku = innerHtml.match(/product=['"]*\s*(\d+)\s*['"]*/)[1];
-                            }else{
-                                if(e.target.tagName == "dl"){
-                                    innerHtml = $(e.target).html();
-                                }else{
-                                    innerHtml = $(e.target).parents("dl").html();
-                                }
-
-                                goodsName = innerHtml.match(/<p class="name">(.*?)<\/p>/)[1];
-                                sku = innerHtml.match(/addProductToCart\((\d+)/)[1];
-                            }
-
-                            //事件
-                            params["tjType"] = "event";
-                            params["eventCat1"] = "搜索商品";
-                            params["eventCat2"] = "商品点击";
-                            params["eventParams"] = {
-                                goodsName: encodeURIComponent( goodsName ),
-                                sku: sku
-                            };
-
-                            //发送请求
-                            sendRequest( getRequest() );
-                        });
+                try{
+                    if(!!$ && !!$().children){
+                        $(parentNode).delegate("dl", "click", "btn", goodsClickCallBack);
                     }
+                }catch(e){
+                    params["errorMsg"] = "getSiteSearchTopSku------" + encodeURIComponent( e.message );
                 }
-            }catch(e){
-                params["errorMsg"] = "getSiteSearchTopSku-------"+e.message;
             }
 
             return goodsIds;
+        }
+
+        /**
+         * 商品点击事件回调
+         */
+        function goodsClickCallBack(e){
+            e = e || window.event;
+            if(!e.target) return;
+
+            var self = $(e.target);
+            var innerHtml = "",
+                goodsName = "",
+                sku = "",
+                href = "";
+
+
+            if(appType == "web"){
+                if(e.data.indexOf(e.target.nodeName)<0) return;
+
+                var aHref = self.parent().attr("href");
+                if(aHref.indexOf("javascript")<0){
+                    href = self.parent().attr("href");
+                }
+
+                innerHtml = self.parents(".box").html();
+                goodsName = innerHtml.match(/<p class="name">.*?(<font>(.*?)<\/font>).*?<\/p>?/)[2];
+                sku = innerHtml.match(/product=['"]*\s*(\d+)\s*['"]*/)[1];
+            }else{
+                if(e.target.nodeName=="A" && self.hasClass(e.data)) return;
+
+                var dlNode = (e.target.nodeName == "DL") ? self : self.parents("DL");
+                var aNodes = dlNode.children("a");
+                for(var i=0;i<aNodes.length;i++){
+                    var n = $(aNodes[i]);
+                    if(n.attr("href").indexOf("javascript")<0){
+                        href = n.attr("href");
+                    }
+                }
+
+                innerHtml = dlNode.html();
+                goodsName = innerHtml.match(/<p(.*?)>(.*?)<\/p>/)[2];
+                sku = innerHtml.match(/addProductToCart\((\d+)/)[1];
+            }
+
+            if(!href) return;
+
+            //事件
+            params["tjType"] = "event";
+            params["eventCat1"] = "搜索商品";
+            params["eventCat2"] = "商品点击";
+            params["eventParams"] = {
+                goodsName: encodeURIComponent( goodsName ),
+                sku: sku,
+                href: encodeURIComponent( href )
+            };
+
+            //发送请求
+            sendRequest( getRequest() );
         }
 
         /**
