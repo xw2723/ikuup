@@ -689,9 +689,11 @@ window.xwpk = (function(){
                 }
 
                 try{
-                    if(!!$ && !!$().delegate){
-                        $(parentNode).delegate(".box", "click", ["IMG","FONT","SPAN"], goodsClickCallBack);
-                    }
+                    window.setTimeout(function(){
+                        if(!!$ && !!$().delegate){
+                            $(parentNode).delegate(".box", "click", ["IMG","FONT","SPAN"], goodsClickCallBack);
+                        }
+                    },1);
                 }catch(e){
                     params["errorMsg"] = "getSiteSearchTopSku------" + encodeURIComponent( e.message );
                 }
@@ -707,9 +709,11 @@ window.xwpk = (function(){
                 }
 
                 try{
-                    if(!!$ && !!$().delegate){
-                        $(parentNode).delegate("dl", "click", "btn", goodsClickCallBack);
-                    }
+                    window.setTimeout(function() {
+                        if (!!$ && !!$().delegate) {
+                            $(parentNode).delegate("dl", "click", "btn", goodsClickCallBack);
+                        }
+                    },1);
                 }catch(e){
                     params["errorMsg"] = "getSiteSearchTopSku------" + encodeURIComponent( e.message );
                 }
