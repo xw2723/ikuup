@@ -689,7 +689,7 @@ window.xwpk = (function(){
                 }
 
                 try{
-                    if(!!$ && !!$().find){
+                    if(!!$ && !!$().delegate){
                         $(parentNode).delegate(".box", "click", ["IMG","FONT","SPAN"], goodsClickCallBack);
                     }
                 }catch(e){
@@ -707,7 +707,7 @@ window.xwpk = (function(){
                 }
 
                 try{
-                    if(!!$ && !!$().children){
+                    if(!!$ && !!$().delegate){
                         $(parentNode).delegate("dl", "click", "btn", goodsClickCallBack);
                     }
                 }catch(e){
