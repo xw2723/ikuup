@@ -711,7 +711,7 @@ window.xwpk = (function(){
                 try{
                     window.setTimeout(function() {
                         if (!!$ && !!$().delegate) {
-                            $(parentNode).delegate("dl", "click", "btn", goodsClickCallBack);
+                            $(parentNode).delegate("dl", "click", goodsClickCallBack);
                         }
                     },1);
                 }catch(e){
@@ -748,7 +748,7 @@ window.xwpk = (function(){
                 goodsName = innerHtml.match(/<p class="name">.*?(<font>(.*?)<\/font>).*?<\/p>?/)[2];
                 sku = innerHtml.match(/product=['"]*\s*(\d+)\s*['"]*/)[1];
             }else{
-                if(e.target.nodeName=="A" && self.hasClass(e.data)) return;
+                if(e.target.nodeName=="A" && self.hasClass("btn")) return;
 
                 var dlNode = (e.target.nodeName == "DL") ? self : self.parents("DL");
                 var aNodes = dlNode.children("a");
