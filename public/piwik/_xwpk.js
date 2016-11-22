@@ -439,7 +439,7 @@ window.xwpk = (function(){
              * @type {*|string|string}
              */
             params["title"] = params["title"] || document.title || "";
-            params["pageUrl"] =  encodeURIComponent( params["pageUrl"] || decodeURIComponent(document.location.href) || "" );
+            params["pageUrl"] =  params["pageUrl"] || encodeURIComponent( decodeURIComponent(document.location.href) || "" );
             params["screenPoint"] = params["screenPoint"] || (window.screen.width +"x"+ window.screen.height);
             params["bitrack"] = params["bitrack"] || getBitrack() || "";
             //站内搜索信息搜集
@@ -501,9 +501,9 @@ window.xwpk = (function(){
                  * bk：将路径中的双引号替换成单引号    .replace(/(\%22)+/g,"'")
                  * bk：获取端口好     var port = window.location.port ? (":"+window.location.port):"";
                  */
-                params["pageParameter"] = encodeURIComponent( params["pageParameter"] || location.search.substr(1) || "" );
+                params["pageParameter"] = params["pageParameter"] || encodeURIComponent( location.search.substr(1) || "" );
                 params["pageDomain"] = params["pageDomain"] || document.domain || "";
-                params["pagePath"] = encodeURIComponent( params["pagePath"] || document.location.pathname || "" );
+                params["pagePath"] = params["pagePath"] || encodeURIComponent( document.location.pathname || "" );
 
                 /**
                  * 来源URL信息收集
