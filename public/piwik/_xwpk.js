@@ -822,6 +822,10 @@ window.xwpk = (function(){
                 }
             }else{  //m站
                 var paths = document.location.pathname.split("/");
+                if(paths.indexOf("showCategory")>=0){
+                    return null;
+                }
+
                 var idx = paths.indexOf("search");
                 if(idx>=0){
                     return paths[idx+1];
