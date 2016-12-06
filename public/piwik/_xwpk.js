@@ -1211,11 +1211,10 @@ window.xwpk = (function(){
              * @param name
              * @param value
              */
-            setCustomVariable: function(name,value){
-                var values = [name, value];
-
-                params["cv"] = values.join(";");
-                setCookie("_bjtje", values.join("|"), "y5");
+            setCustomVariable: function(param){
+                params["cv1"] = param.cv1;
+                params["cv2"] = param.cv2;
+                //setCookie("_bjtje", values.join("|"), "y5");
             },
             /**
              * 测试，暂无用处
