@@ -1,7 +1,3 @@
-/**
- * Created by Administrator on 2016/7/26.
- */
-
 var userLoginApp = angular.module("userLoginApp", []);
 
 //登录
@@ -11,14 +7,14 @@ userLoginApp.controller("userLoginCtrl",["$scope", function($scope){
     $scope.user = {
         username: null,
         password: null,
-        confirmPass: null
+        confirmPass: null,
+        validationCode: null,
+        tag: null
     };
 
     this.init = function(){
         angular.element(document).ready(function(){
-            $("<img/>").attr('src', '/img/bg/login-bg.jpg').load(function () {
-                console.log("背景图片加载完成！");
-            });
+            $.backstretch("../../img/4.jpg");
         });
     };
 
@@ -52,6 +48,10 @@ userLoginApp.controller("userLoginCtrl",["$scope", function($scope){
                 console.log(res.msg);
             }
         });
+    };
+
+    $scope.updateCode = function(){
+        //更新验证码
     };
 
     this.init();

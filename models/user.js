@@ -7,9 +7,13 @@ var mongoose = require("mongoose");
 //创建模型
 var Schema = mongoose.Schema;
 var userScheMa = new Schema({
-    username: String,   //用户名
-    password: String,   //密码
-    sax: {type:Number, default: 2}, //性别
+    name: String,       //用户名
+    pass: String,       //密码
+    mobile: Number,     //手机
+    email: String,      //邮箱
+    nickname: String,  //昵称
+    birthday: Date,    //生日
+    sax: {type:Number, default: 2},     //性别
     createTime: {type:Date, default:Date.now}   //创建时间
 });
 

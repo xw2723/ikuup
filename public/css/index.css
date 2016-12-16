@@ -1,0 +1,50 @@
+.test {
+  box-shadow: 0 0 1px 15px rgba(0, 0, 0, 0.2); }
+
+.test2 {
+  -webkit-animation: loginBoxShow 0.5s linear forwards;
+          animation: loginBoxShow 0.5s linear forwards; }
+
+.test3 {
+  -webkit-animation: loginBoxShow 0.5s linear forwards;
+          animation: loginBoxShow 0.5s linear forwards; }
+
+@-webkit-keyframes loginBoxShow {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale(0.5);
+            transform: scale(0.5); }
+  100% {
+    opacity: 1;
+    -webkit-transform: scale(1);
+            transform: scale(1); } }
+
+@keyframes loginBoxShow {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale(0.5);
+            transform: scale(0.5); }
+  100% {
+    opacity: 1;
+    -webkit-transform: scale(1);
+            transform: scale(1); } }
+
+.flowbox .imgbox {
+  overflow: hidden;
+  position: relative; }
+  .flowbox .imgbox .infobox {
+    width: 100%;
+    padding: 5px 10px;
+    background: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    bottom: 0; }
+
+.flowbox .footerbox {
+  width: 100%; }
+  .flowbox .footerbox .btn-group {
+    padding: 5px;
+    overflow: hidden; }
+    .flowbox .footerbox .btn-group > a {
+      padding: 5px;
+      border: 1px solid red;
+      font-size: 0.8em; }

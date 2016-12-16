@@ -61,3 +61,37 @@
   text-align: center;
   font-size: 16px;
   font-weight: bold; }
+
+.login-dialog .modal-dialog {
+  width: 440px;
+  position: relative;
+  padding: 20px;
+  top: 50px; }
+  .login-dialog .modal-dialog > button {
+    position: absolute;
+    top: 5px;
+    right: 7px;
+    outline: none; }
+    .login-dialog .modal-dialog > button * {
+      color: #000;
+      opacity: 1;
+      z-index: 99; }
+
+.other-login i {
+  margin: 0;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  font-size: 18px;
+  display: inline-block;
+  border-radius: 50%;
+  background: #9d9d9d;
+  text-align: center;
+  color: #fff; }
+  .other-login i:hover {
+    background: #4082B5; }
+
+.auth-code {
+  width: 80px;
+  height: 32px; }

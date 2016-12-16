@@ -2,32 +2,196 @@ extends layout
 
 block pageCss
   link(rel="stylesheet" href="/css/index.css")
-  style.
-    #testBtn{
-      width: 120px;
-      height: 34px;
-      line-height: 34px;
-      border: 1px solid red;
-      cursor: pointer;
-    }
 
-  block page-body
-  h1= title
-  p Welcome to #{title}
-  ul
-    each item,i in list
-      li #{item}
+block page-body
+  div.main-body(ng-app="indexModule" ng-controller="indexCtrl")
 
-  a(href="/user/login?keyword=车厘子") 登录
-  br
-  br
-  a(href="http://m01shqa.benlai.com/huadong/zt/test_product") m站测试
-  br
-  br
-  a(href="http://w01shqa.benlai.com/") pc站测试
-  br
-  br
-  div#testBtn 测试点击数
+    div.headimg
+      //头图
+
+    div.container
+      div.headbox
+
+      div.flowbox.row
+        div.col-md-3.col-sm-6.col-xs-12(ng-repeat="item in flows")
+          div.imgbox
+            img(ng-src="{{item.src}}" class="img-responsive")
+            div.infobox
+              a(ng-bind="::item.info")
+          div.footerbox
+            div.btn-group
+              a
+                span.glyphicon.glyphicon-eye-open
+                span(ng-bind="::item.browseCount")
+              a
+                span.glyphicon.glyphicon-comment
+                span(ng-bind="::item.commentCount")
+
+
+
+    br
+    br
+    br
+    a(href="http://m01shqa.benlai.com/huadong/zt/test_product") m站测试
+    br
+    br
+    a(href="http://w01shqa.benlai.com/") pc站测试
+    br
+    br
+    div(ng-click="testBtn()") 测试点击数
+    br
+    br
+    br
+    br
+
+    //div.container#SearchBox
+      div.row#scroller
+        div.col-md-6
+          p web站
+          dl
+            dt
+              | 相关商品
+              span(data-type='ProductTotalNum')  42 个
+
+          #Content.list15_sku(data-type='ProductList')
+            dl
+              dt
+              dd
+                .box(onclick="addProductToCart()")
+                  p.pic
+                    a(href='/huadong/item-18619.html', target='_blank')
+                      img(src='//image2.benlailife.com/ProductImages/000/000/018/619/medium/bb1ad5da-d339-4a7b-b346-fd6d8a1f01fd.jpg?imageView2/2/format/webp', style='display: inline; opacity: 1;')
+                  p.name
+                    a(href='/huadong/item-18619.html', target='_blank')
+                      font 陕西洛川美域高苹果礼盒24粒（果径75# 4.5kg）
+                      span 新果上市 脆甜可口
+                  p.price
+                    | ￥108.00
+                  p.quantity
+                    a.jian(href='javascript:void(0)', data-type='ListMinus')
+                    input(type='text', data-type='ListInput', value='1')
+                    a.jia(href='javascript:void(0)', data-type='ListPlus')
+                  p.btn
+                    a(href='javascript:void(0)', status='0', product='18619', data-type='AddCartBtn')
+                      img(src='//image.benlailife.com/webStatic/images/n_list/list_btn01_24372028.gif')
+            dl
+              dt
+              dd
+                .box
+                  p.pic
+                    a(href='/huadong/item-18620.html', target='_blank')
+                      img(src='//image3.benlailife.com/ProductImages/000/000/018/620/medium/bd385ddd-8caa-4db8-a56b-4abd7a39e6cc.jpg?imageView2/2/format/webp', style='display: inline; opacity: 1;')
+                  p.name
+                    a(href='/huadong/item-18620.html', target='_blank')
+                      font 陕西洛川美域高苹果礼盒16粒（果径80# 3.5kg）
+                      span 新果上市 脆甜可口
+                  p.price
+                    | ￥100.00
+                  p.quantity
+                    a.jian(href='javascript:void(0)', data-type='ListMinus')
+                    input(type='text', data-type='ListInput', value='1')
+                    a.jia(href='javascript:void(0)', data-type='ListPlus')
+                  p.btn
+                    a(href='javascript:void(0)', status='0', product='18620', data-type='AddCartBtn')
+                      img(src='//image.benlailife.com/webStatic/images/n_list/list_btn01_24372028.gif')
+            dl
+              dt
+              dd
+                .box
+                  p.pic
+                    a(href='/huadong/item-39906.html', target='_blank')
+                      img(src='//img3.benlailife.com/ProductImages/000/000/039/906/medium/b9d97e1a-cd13-4e61-b955-b275a0ad56c4.jpg?imageView2/2/format/webp', style='display: inline; opacity: 1;')
+                  p.name
+                    a(href='/huadong/item-39906.html', target='_blank')
+                      font 山东精品红富士  礼盒装12粒（约3kg 果径80-85mm）
+                      span 清脆可口 新鲜多汁
+                  p.price
+                    | ￥69.00
+                    span ￥79.00
+                  p.quantity
+                    a.jian(href='javascript:void(0)', data-type='ListMinus')
+                    input(type='text', data-type='ListInput', value='1')
+                    a.jia(href='javascript:void(0)', data-type='ListPlus')
+                  p.btn
+                    a(href='javascript:void(0)', status='0', product='39906', data-type='AddCartBtn')
+                      img(src='//image.benlailife.com/webStatic/images/n_list/list_btn01_24372028.gif')
+
+        div.col-md-6
+          p m站
+          ul#thelist(style='margin-top: 0.77rem')
+            dl(style='margin-top: 0.15rem')
+              a.btn(href='javascript:;', onclick='addProductToCart(18619,0,1)')
+              a(href='https://m.benlai.com/sh/product/18619')
+                dt
+                  em
+                  img(src='https://image4.benlailife.com/ProductImages/000/000/018/619/medium/bb1ad5da-d339-4a7b-b346-fd6d8a1f01fd.jpg')
+                dd
+                  p 陕西洛川美域高苹果礼盒24粒（果径75# 4.5kg） 新果上市 脆甜可口
+                  p.text 新果上市 脆甜可口
+                  p.ico02 今夜达
+                  p.price
+                    span  ¥108
+                  p.comment
+                    | 4688条评论
+                    span 好评100%
+            dl(style='margin-top: 0.15rem')
+              a.btn(href='javascript:;', onclick='addProductToCart(18620,0,1)')
+              a(href='https://m.benlai.com/sh/product/18620')
+                dt
+                  em
+                  img(src='https://image3.benlailife.com/ProductImages/000/000/018/620/medium/bd385ddd-8caa-4db8-a56b-4abd7a39e6cc.jpg')
+                dd
+                  p.name 陕西洛川美域高苹果礼盒16粒（果径80# 3.5kg） 新果上市 脆甜可口
+                  p.text 新果上市 脆甜可口
+                  p.ico02 今夜达
+                  p.price
+                    span  ¥100
+                  p.comment
+                    | 789条评论
+                    span 好评99%
+            dl(style='margin-top: 0.15rem')
+              a.btn(href='javascript:;', onclick='addProductToCart(39906,0,1)')
+              a(href='https://m.benlai.com/sh/product/39906')
+                dt
+                  em
+                  img(src='https://image3.benlailife.com/ProductImages/000/000/039/906/medium/b9d97e1a-cd13-4e61-b955-b275a0ad56c4.jpg')
+                dd
+                  p.name 山东精品红富士  礼盒装12粒（约3kg 果径80-85mm） 清脆可口 新鲜多汁
+                  p.text 清脆可口 新鲜多汁
+                  p.ico02 今夜达
+                  p.price
+                    span  ¥69
+                    font ¥79
+                  p.comment
+                    | 1161条评论
+                    span 好评98%
+
+
+
 
 block pageScript
+  //script(type='text/javascript' src="/plugins/jquery/jquery.mockjax.min.js")
   script(type='text/javascript' src="/js/index.js")
+  script.
+    var eventNodes = null;
+
+    //web
+    eventNodes = $("#SearchBox").find("#Content .box");
+    //m
+    //eventNodes = $("#thelist").children();
+
+
+    eventNodes.click(function(){
+      console.log(111);
+    });
+    eventNodes.bind("click", function(){
+      console.log(222);
+    });
+
+    function addProductToCart(){
+      console.log(444);
+    }
+
+    $(".btn a[data-type='AddCartBtn']").click(function(){
+      alert(123);
+    });

@@ -2,57 +2,83 @@ extends ../layout
 
 block pageCss
   link(rel="stylesheet" href="/css/user/login.css")
-  link(rel="stylesheet" href="/plugins/naughty/naughty.css")
+  //link(rel="stylesheet" href="/plugins/naughty/naughty.css")
 
-  block page-body
-  div.login-page(ng-app="userLoginApp" ng-controller="userLoginCtrl" ng-cloak)
-    canvas#text(style="position: absolute; display: none;")
-    canvas#stage(style="position: absolute;")
-    //form#form
-      input#inputText(type="text" value="HELLO")
-      input(type="submit" value="TRY IT")
+block page-body
+  .login-page(ng-app="userLoginApp" ng-controller="userLoginCtrl" ng-cloak)
+    .login-page-box
+      .login-box
+        ul#myTab.nav.nav-tabs
+          li.active
+            a(href="#loginTab", data-toggle="tab") 登&nbsp; &nbsp; &nbsp;录
+          li
+            a(href="#registeredTab", data-toggle="tab") 注&nbsp; &nbsp; &nbsp;册
 
-    div.login-box
-      a(href="registered") 测试到注册页
-      ul.nav.nav-tabs
-        li.active
-          a(href="#loginBox" data-toggle="tab") 用户登录
-        li
-          a(href="#registerBox" data-toggle="tab") 用户注册
-        li
-          a(href="#downloadBox" data-toggle="tab") APP下载
+        .tab-content
+          #loginTab.tab-pane.fade.in.active(ng-form="loginFrom")
+            ul.form-box
+              li
+                .control-box.login-name
+                  input(ng-model="user.username", type="text", placeholder="登录帐号")
+              li
+                .control-box.login-pass
+                  input(ng-model="user.password", type="password", placeholder="登录密码")
+              li.row.row-grid
+                .col-md-9
+                  .control-box
+                    input(ng-model="user.validationCode", type="text", name="loginAuthCode", placeholder="验证码")
+                .col-md-3.text-right
+                  img.auth-code(ng-click="updateCode()", src="../img/authCode.png")
+              li
+                button.btn.btn-primary.form-control 登&nbsp; &nbsp; &nbsp;录
+              li.row.row-grid.jzw-box
+                .col-md-6.text-left
+                  input(ng-model="user.tag", type="checkbox")
+                  | 记住我
+                .col-md-6.text-right
+                  a(href="#") 忘记密码？
+              li.other-login
+                | 三方登陆：
+                a(href="#")
+                  i.iconfont 
+                a(href="#")
+                  i.iconfont 
+              li.row
 
-      div.tab-content
-        div#loginBox.tab-pane.fade.in.active
-          dl.tab-item
-            dd.name-box
-              label(for="username") 用户名：
-              input(ng-model="user.username" type="text" class="form-control")
-            dd.pass-box
-              label(for="password") 密码：
-              input(ng-model="user.password" type="password" class="form-control")
-            dd.submit-box
-              button(ng-click="doLogin()" class="btn") 登录
-            dd.wj
-              label 忘记密码？
-              a(href="#") 找回
-            dd.sf-login
-
-        div#registerBox.tab-pane.fade
-          dl.tab-item
-            dd.name-box
-              input(type="text" name="username" placeholder="用户名" class="form-control")
-            dd.pass-box
-              input(type="password" name="password" placeholder="登录密码" class="form-control")
-            dd.pass-box
-              input(type="password" name="confirmPass" placeholder="确认密码" class="form-control")
-            dd.pass-box 验证码
-            dd.submit-box
-              button(ng-click="doRegister()" class="btn") 注册
+          #registeredTab.tab-pane.fade
+            ul.form-box
+              li
+                .control-box
+                  input(type="text", name="loginName", placeholder="登录帐号")
+              li
+                .control-box
+                  input(type="password", name="loginPass", placeholder="登录密码")
+              li
+                .control-box
+                  input(type="password", name="loginConfirmPass", placeholder="确认密码")
+              li
+                .control-box
+                  input(type="text", name="nickname", placeholder="昵称")
+              li
+                .control-box
+                  input(type="text", name="birthday", placeholder="生日")
+              li
+                .control-box
+                  input(type="text", name="nickname", placeholder="安全邮箱，用于账号找回和密码修改")
+              li.row.row-grid
+                .col-md-9
+                  .control-box
+                    input(type="text", name="loginAuthCode", placeholder="验证码")
+                .col-md-3.text-right
+                  img.auth-code(src="../img/authCode.png")
+              li
+                button.btn.btn-primary.form-control 注&nbsp; &nbsp; &nbsp;册
+              li.row
 
 block pageScript
-  script(type='text/javascript' src="/plugins/naughty/easeljs-0.7.1.min.js")
-  script(type='text/javascript' src="/plugins/naughty/TweenLite.min.js")
-  script(type='text/javascript' src="/plugins/naughty/naughty.js")
+  //script(type='text/javascript' src="/plugins/naughty/easeljs-0.7.1.min.js")
+  //script(type='text/javascript' src="/plugins/naughty/TweenLite.min.js")
+  //script(type='text/javascript' src="/plugins/naughty/naughty.js")
+  script(type='text/javascript' src="/plugins/jquery/jquery.backstretch.min.js")
   script(type='text/javascript' src="/js/user/login.js")
 

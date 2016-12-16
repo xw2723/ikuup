@@ -1,0 +1,46 @@
+
+.test
+	box-shadow: 0 0 1px 15px rgba(0,0,0,0.2)
+
+.test2
+	animation: loginBoxShow 0.5s linear forwards
+
+.test3
+	animation: loginBoxShow 0.5s linear forwards
+
+@keyframes loginBoxShow
+	0%
+		opacity: 0
+		transform: scale(0.5)
+	100%
+		opacity: 1
+		transform: scale(1)
+
+
+.flowbox
+	.imgbox
+		overflow: hidden
+		position: relative
+		&>img
+
+		.infobox
+			width: 100%
+			padding: 5px 10px
+			background: rgba(0,0,0,0.3)
+			position: absolute
+			bottom: 0
+			&>a
+				//color: #F9F7EB  //乳白色
+				//color: #F1D9AB  //土豪金色
+				//color: #E5C76D  //土豪金色2
+
+	.footerbox
+		width: 100%
+		.btn-group
+			padding: 5px
+			overflow: hidden
+			&>a
+				padding: 5px
+				border: 1px solid red;
+				font-size: 0.8em
+

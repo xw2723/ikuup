@@ -3,6 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  console.log("-----------------index-------------------");
   res.render('index', {
     title: 'Express',
     list: [1,2,3,4,5]
@@ -11,8 +12,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/piwik/piwik', function(req, res, next) {
-
-  console.log(JSON.stringify(req.body));
+  console.log("-----------------piwik-------------------");
   res.send(200, {
     success: true,
     msg: "piwik请求成功！"
@@ -21,15 +21,27 @@ router.get('/piwik/piwik', function(req, res, next) {
 });
 
 router.get('/piwik/xwpk', function(req, res, next) {
-
-  console.log("------------------------------------");
-  console.log(JSON.stringify(req.body));
-  console.log("------------------------------------");
+  console.log("-----------------xwpk-------------------");
+  console.log(req.query.data);
   res.send(200, {
     success: true,
     msg: "xwpk请求成功！"
   });
 
+});
+
+router.get('/search/*', function(req, res, next) {
+  res.render('index', {
+    title: 'Express',
+    list: [1,2,3,4,5]
+  });
+});
+
+router.get('/showCategory/search/*', function(req, res, next) {
+  res.render('index', {
+    title: 'Express',
+    list: [1,2,3,4,5]
+  });
 });
 
 module.exports = router;

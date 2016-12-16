@@ -1,7 +1,6 @@
 /**
  * gulp 构建工具
  */
-
 var gulp = require("gulp"),
     sass = require("gulp-sass"),
     //jade = require('gulp-jade'),
@@ -21,10 +20,32 @@ var gulp = require("gulp"),
     //删除
     del = require('del');
 
+// 获取当前文件路径
+//var PWD = process.env.PWD || process.cwd(); // 兼容windows
+
+//路径参数
+var DEST = 'public',                               // 编译目录
+    DEST_CSS = './public/css',                    // css编译目录
+    DEST_JS = './public/js',                      // js编译目录
+    DEST_IMG = './public/img',                    // img编译目录
+    DEST_HTML = './src/build/html',              // html编译目录
+    WEB_PORT = 9000;                                // 服务器监听的端口
+
+// 说明
+//gulp.task('help',function () {
+//    console.log('	gulp build           文件打包');
+//    console.log('	gulp watch	          文件监控打包');
+//    console.log('	gulp help            gulp参数说明');
+//    console.log('	gulp server			测试server');
+//    console.log('	gulp -p				生产环境（默认生产环境）');
+//    console.log('	gulp -d				开发环境');
+//    console.log('	gulp -m <module>		部分模块打包（默认全部打包）');
+//});
 
 //default task
 gulp.task("default", ["sass", "js", "watch", "minifyjs"]);
 //gulp.task("default", ["commonSass", "sass", "commonJs", "js", "css", "jade", "watch"]);
+
 
 //使用connect启动一个Web服务器
 gulp.task('connect', function () {
@@ -45,7 +66,7 @@ gulp.task("sass", function(){
             //        transform: rotate(45deg);
             remove:true //是否去掉不必要的前缀 默认：true
         }))
-        .pipe(gulp.dest("./public/css"));
+        .pipe(gulp.dest(DEST_CSS));
         //.pipe(connect.reload())
 });
 
@@ -62,7 +83,7 @@ gulp.task("sass", function(){
 
 gulp.task("js", function(){
     return gulp.src("./views/**/*.js")
-        .pipe(gulp.dest("./public/js"));
+        .pipe(gulp.dest(DEST_JS));
 });
 
 //gulp.task("css", function(){
@@ -73,7 +94,7 @@ gulp.task("js", function(){
 //gulp.task("jade", function(){
 //    return gulp.src("./src/compile/**/*.jade")
 //        .pipe(jade())
-//        .pipe(gulp.dest("./src/build/html"));
+//        .pipe(gulp.dest(DEST_HTML));
 //});
 
 gulp.task('minifyjs', function() {
@@ -90,6 +111,9 @@ gulp.task('minifyjs', function() {
 gulp.task("watch", function(){
     watch("./views/**/*.sass", function(){
         gulp.start("sass");
+        gulp.start("minifyjs");
+    });
+    watch("./views/**/*.js", function(){
         gulp.start("js");
         gulp.start("minifyjs");
     });
