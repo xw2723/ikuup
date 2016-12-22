@@ -938,8 +938,12 @@ window.xwpk = (function(){
          * @param callback
          */
         function sendRequest(request, callback){
-            var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
-            //var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
+            // 生产
+            //var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
+            // 测试
+            //var apiUrl = "//192.168.60.28:8080/Bitj/js/commit_data.do";
+            // 本地
+            var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
 
             var image = new Image(1, 1);
             image.onload = function () {
