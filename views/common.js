@@ -228,15 +228,12 @@ function getDeviceInfo(){
 //"https://www.baidu.com/baidu.php?sc.060000jZYuibWkd0MB6IS3j0aNftz67K7YAh6MhtYTJGXKayuxtSSUqgPNz7I9XIRXuBIY4pu5S1Ksgcfyv2MNvb5h0Nn4qxwNOK6Rm68yu8e9bzE6zbVqfkpmtcj2nJoJ_7FNlPcd3EodKDd80TFVn05JuAFnjz85KQ_7rgA2d12YBf.Db_aqnN7-lc59OPS5SVP14bsYrtTYQAMZdWYwkrmotIW__l3FJQj5eOS8zZqOSFYOoYUSPAZKOvP5O76EORS85qXMtEYgOW_zsOJRPxOmzxy9jSGqTxtWFvU3xd2raZqHl3OSkbeIn5l-jy1k8ex1xtjtVAOtejZgZvt_QrMAzONDkWx7WuxaOoWeXgV3QhcYlNPHV2XgZJyAp7WIgYe-0.U1Yk0ZDq_Ue0VnMl8S30IjvkE_aYzxJee6KGUHYznjf0u1dBUW0s0ZNG5yF9pywd0ZKGujYz0APGujY1rHb0UgfqnH0zndtknjDg1nknWKxnH0krfKopHYs0ZFY5H61PsK-pyfqnHfzPdtznjT4PNtkrjc3nNtkP1bYndtznH03P7tznHnPdtznHD4n7tznHnndtznHnzn6KBpHYznjwxnHRd0AdW5H7xnW04rjT3njf1g1Dsn-tznjbYnjndnW60TgKGujYs0Z7Wpyfqn0Kzuw9u1Ys0AqvUjYzPWm4Qywlg1cvPW-mQywlg1n3PHcVn7t3PHbVnsK9mWYsg100ugFM5H00TZ0qnWRPjnknjfd0A4vTjYsQW0snj0snj0s0AdYTjYs0AwbU0qn0KzpWYs0Aw-IWdsmsKhIjYs0ZKC5H00Unqn0KBI1Ykn0K8IjYs0ZPl5fKYIgnqnHn3PWcYn1m3n1TdnWc4n103nfKzug7Y5HDYP1m3P101Pjb1PWR0Tv-b5yRYuW01PyN-nj0snjTznW00mPV5HI7fWT3njIAnHwDfYndnDc0mynqnfKsUWYs0Z7VIjYs0Z7VT1Ys0ZGY5H00UyPxuMFEUHYsg1Kxn7ts0AwYpyfqn0K-IA-b5iYk0A71TAPW5H00IgKGUhPW5H00Tydh5H00uhPdIjYs0ZGsUZN15H00mFW5HczrHc&us=0.0.0.0.0.0.10&ck=4081.8.88.259.303.292.282.490&shh=www.baidu.com&sht=baiduhome_pg&us=1.0.3.0.3.1203.0&wd=%E6%9C%AC%E6%9D%A5%E7%94%9F%E6%B4%BB&issp=1&f=3&ie=utf-8&rqlang=cn&tn=baiduhome_pg&rsp=0"
 //"https://www.baidu.com/link?url=B-veTkk6WZgts_eC2UUa8AxUNAW9y-1P3eThQxaxdiCC7N0yVFsRUYhC60r5sdz&wd=&eqid=e4f035ee0000722000000003580740cd"
 //https://www.google.co.jp/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0ahUKEwiQhMuf4ejPAhVJzFQKHWKYA28QFggcMAA&url=https%3A%2F%2Fwww.benlai.com%2F&usg=AFQjCNE9uBkOAby653Sub7FW29gq0Z-vuA&cad=rja
-//setCookie(
-//    "bi_refer",
-//    "http://bzclk.baidu.com/adrc.php?t=06K00c00fZHzw60JfGy0Kay6jPf0Im00000caYpj300000IEc9BV.THvkE_aYzxJee6K85yF9pywdpAqVuNqsusK15yRYuW01PyN-nj0snjTznW00IHYdPYPKnjfsnj-DnW6Ynb7KwRuAnYnsn1m3nW0YPW9KfsK95gTqFhdWpyfqnW6zPWmvP16nBusThqbpyfqnHm0uHdCIZwsrBtEIIQhF-Uhk9pi4WUvYEfdKHRhNbpgF-mfOTFW5ydsFMP4Tv4E5HckPHn3PiudThsqmR9inAPDUunnvf1uZbdpNGgPgPuNvVdyHc4IDb1fMFmnb4Cm-9apA7guZNfNDNVmYIYuhD1uAVfNDRqFMKogvP9UgK9pyI85HDhTAVxpIb5HD0mFW5HDzPWc4&tpl=tpl_10085_14394_1&l=1047049344&wd=%E6%9C%AC%E6%9D%A5%E7%94%9F%E6%B4%BB&issp=1&f=3&ie=utf-8&rqlang=cn&tn=baiduhome_pg&rsp=0",
-//    ,"s0"
-//);
+setCookie(
+    "bi_refer",
+    "http://bzclk.baidu.com/adrc.php?t=06K00c00fZHzw60JfGy0Kay6jPf0Im00000caYpj300000IEc9BV.THvkE_aYzxJee6K85yF9pywdpAqVuNqsusK15yRYuW01PyN-nj0snjTznW00IHYdPYPKnjfsnj-DnW6Ynb7KwRuAnYnsn1m3nW0YPW9KfsK95gTqFhdWpyfqnW6zPWmvP16nBusThqbpyfqnHm0uHdCIZwsrBtEIIQhF-Uhk9pi4WUvYEfdKHRhNbpgF-mfOTFW5ydsFMP4Tv4E5HckPHn3PiudThsqmR9inAPDUunnvf1uZbdpNGgPgPuNvVdyHc4IDb1fMFmnb4Cm-9apA7guZNfNDNVmYIYuhD1uAVfNDRqFMKogvP9UgK9pyI85HDhTAVxpIb5HD0mFW5HDzPWc4&tpl=tpl_10085_14394_1&l=1047049344&wd=%E6%9C%AC%E6%9D%A5%E7%94%9F%E6%B4%BB&issp=1&f=3&ie=utf-8&rqlang=cn&tn=baiduhome_pg&rsp=0"
+);
 
 //setCookie("_bltja","1476028800000|1476028800000|1476028800000","y5")
-
-//http://10.10.110.113:3000/search/苹果
 
 <!-- xwpk -->
 var _xwq = _xwq || [];
@@ -247,13 +244,20 @@ var _xwq = _xwq || [];
 //    }
 //]);
 (function() {
+    //生产
+    //var u = "//bitj.benlai.com/Trafficstatistics/tj/";
+    //测试
+    //var u = "//192.168.60.28:8080/Bitj/tj/";
+    //本地
     //var u="//localhost:3000/piwik/";
     var u="//10.10.110.113:3000/piwik/";
+
     _xwq.push(["setSiteId", 888]);
-    _xwq.push(["setCustomVariable", {
-        "cv1":"页面名称",
-        "cv2":"页面说明"
-    }]);
+    _xwq.push(["setChannelSource", 789]);
+    //_xwq.push(["setCustomVariable", {
+    //    "cv1":"页面名称",
+    //    "cv2":"页面说明"
+    //}]);
     //_xwq.push(["setCustomerAuto", "off"]);    //设置customerId是否自动从cookie中获取， on自动(默认)，off关闭
     //_xwq.push(["setCustomerId", "101"]);      //设置customerId
     //_xwq.push(["setAppType", "m"]);         //默认为web站, m, app
@@ -263,3 +267,39 @@ var _xwq = _xwq || [];
     g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'_xwpk.js'; s.parentNode.insertBefore(g,s);
 })();
 <!-- End xwpk Code -->
+
+
+//android 13
+//ios 12
+
+
+//示例    PC站
+//var _xwq = _xwq || [];
+//(function () {
+//    var u = "";
+//    //假设环境字段为environmentType
+//    if(environmentType=="生产"){
+//        u = "//bitj.benlai.com/Trafficstatistics/";
+//    }else{
+//        u = "//192.168.60.28:8080/Bitj/";
+//    }
+//    _xwq.push(["setSiteId", 10]);
+//    var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+//    g.type = 'text/javascript'; g.async = true; g.defer = true; g.src = u + 'tj/xwpk.js'; s.parentNode.insertBefore(g, s);
+//})();
+
+
+//示例    M站
+//var _xwq = _xwq || [];
+//(function () {
+//    var u = "";
+//    //假设环境字段为environmentType
+//    if(environmentType=="生产"){
+//        u = "//bitj.benlai.com/Trafficstatistics/";
+//    }else{
+//        u = "//192.168.60.28:8080/Bitj/";
+//    }
+//    _xwq.push(["setSiteId", 11]);
+//    var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+//    g.type = 'text/javascript'; g.async = true; g.defer = true; g.src = u + 'tj/xwpk.js'; s.parentNode.insertBefore(g, s);
+//})();

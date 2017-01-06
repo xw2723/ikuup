@@ -15,7 +15,7 @@ block page-body
       div.flowbox.row
         div.col-md-3.col-sm-6.col-xs-12(ng-repeat="item in flows")
           div.imgbox
-            img(ng-src="{{item.src}}" class="img-responsive")
+            img(ng-src1="{{item.src}}" class="img-responsive")
             div.infobox
               a(ng-bind="::item.info")
           div.footerbox
@@ -28,11 +28,10 @@ block page-body
                 span(ng-bind="::item.commentCount")
 
 
-
     br
     br
     br
-    a(href="http://m01shqa.benlai.com/huadong/zt/test_product") m站测试
+    a(onclick="test(this)" href="http://m01shqa.benlai.com/huadong/zt/test_product") m站测试
     br
     br
     a(href="http://w01shqa.benlai.com/") pc站测试
@@ -172,26 +171,3 @@ block page-body
 block pageScript
   //script(type='text/javascript' src="/plugins/jquery/jquery.mockjax.min.js")
   script(type='text/javascript' src="/js/index.js")
-  script.
-    var eventNodes = null;
-
-    //web
-    eventNodes = $("#SearchBox").find("#Content .box");
-    //m
-    //eventNodes = $("#thelist").children();
-
-
-    eventNodes.click(function(){
-      console.log(111);
-    });
-    eventNodes.bind("click", function(){
-      console.log(222);
-    });
-
-    function addProductToCart(){
-      console.log(444);
-    }
-
-    $(".btn a[data-type='AddCartBtn']").click(function(){
-      alert(123);
-    });

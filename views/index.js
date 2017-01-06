@@ -1,6 +1,15 @@
 /**
  * Created by Administrator on 2016/7/26.
  */
+
+function test(event){
+    var ret = confirm("确认要离开吗?");
+    if(ret){
+        window.location.href = "user/login";
+        event.preventDefault();
+    }
+}
+
 var indexModule = angular.module("indexModule", []);
 
 indexModule.controller("indexCtrl", ["$scope", "pageData", function ($scope, pageData) {
