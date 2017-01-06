@@ -23,6 +23,10 @@ router.get('/piwik/piwik', function(req, res, next) {
 router.get('/piwik/xwpk', function(req, res, next) {
   console.log("-----------------xwpk-------------------");
   console.log(req.query.data);
+  var dataJson = JSON.parse(req.query.data);
+  console.log(dataJson.userAgent);
+  console.log(dataJson.exploreName);
+  console.log(dataJson.osName);
   res.send(200, {
     success: true,
     msg: "xwpk请求成功！"
