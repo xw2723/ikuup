@@ -69,7 +69,10 @@ window.xwpk = (function(){
         customerAuto = "on" || "off",     //设置customerId是否自动从cookie中获取，默认on自动
         uuid;                               //唯一标识
 
-    this.equipmentInfo = {};      //设备信息对象
+    //userAgent信息
+    this.parsingUserAgent = null;
+    //设备信息对象
+    this.equipmentInfo = {};
 
     this.init = function(){
         uuid = getUUID();
@@ -136,288 +139,7 @@ window.xwpk = (function(){
         //web站，m站，app应用，默认web站
         var appType = "web" || "m" || "app";
 
-        /**
-         * 获取浏览器信息
-         * @returns {{b_n: string, b_v: number}}
-         */
-        function getBrowserInfo(userAgent){
-            var agent = userAgent || navigator.userAgent.toLowerCase(),
-                opera = window.opera,
-                browser = {
-                    exploreName: "",
-                    exploreVersion: ""
-                };
-
-            //micromessenger 微信 app 优先级最高
-            var isWechat = /micromessenger\/(\d+\.\d)/i.test(agent);
-            if (isWechat) {
-                browser.exploreName = "wechat";
-                browser.exploreVersion = RegExp['\x241'];
-                return browser;
-            }
-
-            var version = 0;
-            //ie
-            if (/(msie\s|trident.*rv:)([\w.]+)/.test(agent)) {
-                var v1 = agent.match(/(?:msie\s([\w.]+))/);
-                var v2 = agent.match(/(?:trident.*rv:([\w.]+))/);
-                if (v1 && v2 && v1[1] && v2[1]) {
-                    version = Math.max(v1[1] * 1, v2[1] * 1);
-                } else if (v1 && v1[1]) {
-                    version = v1[1] * 1;
-                } else if (v2 && v2[1]) {
-                    version = v2[1] * 1;
-                } else {
-                    version = 0;
-                }
-
-                browser.exploreName = "ie";
-                browser.exploreVersion = version;
-            }
-
-            //safari
-            var isSafari = /(\d+\.\d)?(?:\.\d)?\s+safari\/?(\d+\.\d+)?/i.test(agent);
-            if (isSafari) {
-                browser.exploreName = "safari";
-                browser.exploreVersion = (RegExp['\x241'] || RegExp['\x242']);
-            }
-
-            //chrome
-            var isChrome = /chrome\/(\d+\.\d)/i.test(agent) || /crios\/(\d+\.\d)/i.test(agent);
-            if (isChrome) {
-                browser.exploreName = "chrome";
-                browser.exploreVersion = RegExp['\x241'];
-            }
-
-            //firefox
-            var isFirefox = /firefox\/(\d+\.\d)/i.test(agent);
-            if (isFirefox) {
-                browser.exploreName = "firefox";
-                browser.exploreVersion = RegExp['\x241'];
-            }
-
-            //QQ browser
-            var isQQ_pc = /qqbrowser\/(\d+\.\d)/i.test(agent) && !/micromessenger\/(\d+\.\d)/i.test(agent);
-            if (isQQ_pc) {
-                browser.exploreName = "qq";
-                browser.exploreVersion = RegExp['\x241'];
-            }
-
-            //QQ 新闻app
-            var isQQ_news = /qqnews\/(\d+\.\d)/i.test(agent);
-            if (isQQ_news) {
-                browser.exploreName = "qq news";
-                browser.exploreVersion = RegExp['\x241'];
-            }
-
-            //QQ app
-            var isQQ_app = /qq\/(\d+\.\d)/i.test(agent);
-            if (isQQ_app) {
-                browser.exploreName = "qq app";
-                browser.exploreVersion = RegExp['\x241'];
-                return browser;
-            }
-
-            //baidu browser
-            var isBaidu = /((baidu)|(bidu))browser(\/|\s)(\d\.\d)/i.test(agent);
-            if (isBaidu) {
-                browser.exploreName = "baidu";
-                browser.exploreVersion = RegExp['\x245'];
-            }
-
-            //baidu app
-            var isBaidu_app = /baiduboxapp\/((\d\_(\d+\.)+\d)|(\d\.\d))/i.test(agent);
-            if (isBaidu_app) {
-                browser.exploreName = "baidu app";
-                browser.exploreVersion = RegExp['\x241'];
-                return browser;
-            }
-
-            //baidu app
-            var isBaidu_app = /alipayclient\/((\d\_(\d+\.)+\d)|(\d\.\d))/i.test(agent);
-            if (isBaidu_app) {
-                browser.exploreName = "alipay";
-                browser.exploreVersion = RegExp['\x241'];
-                return browser;
-            }
-
-            //ucbrowser
-            var isUC = /ucbrowser\/(\d+\.\d)/i.test(agent) || /ucweb\/(\d+\.\d)/i.test(agent);
-            if (isUC) {
-                browser.exploreName = "uc";
-                browser.exploreVersion = RegExp['\x241'];
-            }
-
-            //搜狗浏览器`SE 2.X
-            var isSogou = /sogoumse,sogoumobilebrowser\/(\d+\.\d)/i.test(agent) || /se (\d+)\.*/i.test(agent);
-            if (isSogou) {
-                browser.exploreName = "sogou";
-                browser.exploreVersion = RegExp['\x241'];
-            }
-
-            //猎豹
-            var isLB = /liebaofast\/(\d+\.\d)/i.test(agent);
-            if (isLB) {
-                browser.exploreName = "liebao";
-                browser.exploreVersion = RegExp['\x241'];
-            }
-
-            //MxBrowser mxbrowser 遨游
-            var isAY = /mxbrowser\/(\d+\.\d)/i.test(agent) || /maxthon\/(\d+\.\d)/i.test(agent);
-            if (isAY) {
-                browser.exploreName = "aoyou";
-                browser.exploreVersion = RegExp['\x241'];
-            }
-
-            //2345浏览器
-            var isAY = /2345browser\/(\d+\.\d)/i.test(agent);
-            if (isAY) {
-                browser.exploreName = "2345";
-                browser.exploreVersion = RegExp['\x241'];
-            }
-
-            //ubrowser
-            var isU = /ubrowser\/(\d+\.\d)/i.test(agent);
-            if (isU) {
-                browser.exploreName = "ubrowser";
-                browser.exploreVersion = RegExp['\x241'];
-            }
-
-            //小米浏览器
-            var isXiaomi = /xiaomi\/miuibrowser\/(\d+\.\d)/i.test(agent);
-            if (isXiaomi) {
-                browser.exploreName = "xiaomi";
-                browser.exploreVersion = RegExp['\x241'];
-            }
-
-            //绿茶浏览器
-            var isLe = /lebrowser\/(\d+\.\d)/i.test(agent);
-            if (isLe) {
-                browser.exploreName = "lvcha";
-                browser.exploreVersion = RegExp['\x241'];
-            }
-
-            //360 会有将firefox统计成360的情况
-            //if((window.navigator.mimeTypes[40] || !window.navigator.mimeTypes.length)){
-            //    browser.exploreName = "360";
-            //    browser.exploreVersion = "";
-            //}
-
-            // Opera
-            var isOpera = /opr\/(\d+\.\d)/i.test(agent) || /presto\/(\d+\.\d)/i.test(agent);
-            if ((!!opera && opera.version) || isOpera){
-                browser.exploreName = "opera";
-                browser.exploreVersion = opera ? parseFloat(opera.version()) : RegExp['\x241'];
-            }
-
-            return browser;
-        }
-
-        /**
-         * 获取本地操作系统信息
-         * @returns {*}
-         */
-        function getOS() {
-            var sUserAgent = navigator.userAgent;
-            if(!sUserAgent) return {
-                name: "",
-                version: ""
-            };
-
-            var isIphone = sUserAgent.indexOf("iPhone;") > -1;
-            if(isIphone) return {
-                name: "iPhone IOS",
-                //version: sUserAgent.match(/iPhone OS (\d+\_\d)/i)[1].replace("_",".")
-                version: ""
-            };
-            var isIpad = sUserAgent.indexOf("iPad") > -1;
-            if(isIpad) return {
-                name: "iPad IOS",
-                //version: sUserAgent.match(/iPad OS (\d+\_\d)/i)[1].replace("_",".")
-                version: ""
-            };
-            var isIpod = sUserAgent.indexOf("iPod") > -1;
-            if(isIpod) return {
-                name: "iPod IOS",
-                //version: sUserAgent.match(/iPhone OS (\d+\_\d)/i)[1].replace("_",".")
-                version: ""
-            };
-
-            var isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
-            if (isMac) return {
-                name: "mac",
-                //version: "sUserAgent.match(/Mac OS X (\d+\.\d+)/i)[1]
-                version: ""
-            };
-
-            var isLinux = (String(navigator.platform).indexOf("Linux") > -1);
-            if (isLinux){
-                //var infoOS = sUserAgent.match(/(\(.*?\))+/g)[0];
-                //["(Linux; Android 5.1; OPPO R9tm Build/LMY47I)", "(KHTML, like Gecko)"]
-                var isAndroid = sUserAgent.indexOf('Android') > -1 || sUserAgent.indexOf('Adr') > -1;
-                if( /Android (\d+\.\d)/i.test(sUserAgent) ){
-                    return {
-                        name: "android",
-                        version: sUserAgent.match(/Android (\d+\.\d)/i)[1]
-                    };
-                }else{
-                    return {
-                        name: "linux",
-                        version: ""
-                    };
-                }
-            }
-
-            var isWin = (navigator.platform == "Win32") || (navigator.platform == "Windows");
-            if (isWin) {
-                var isWin2K = sUserAgent.indexOf("Windows NT 5.0") > -1 || sUserAgent.indexOf("Windows 2000") > -1;
-                if (isWin2K) return {
-                    name: "windows",
-                    version: "2000"
-                };
-                var isWinXP = sUserAgent.indexOf("Windows NT 5.1") > -1 || sUserAgent.indexOf("Windows XP") > -1;
-                if (isWinXP) return {
-                    name: "windows",
-                    version: "xp"
-                };
-                var isWin2003 = sUserAgent.indexOf("Windows NT 5.2") > -1 || sUserAgent.indexOf("Windows 2003") > -1;
-                if (isWin2003) return {
-                    name: "windows",
-                    version: "2003"
-                };
-                var isWinVista= sUserAgent.indexOf("Windows NT 6.0") > -1 || sUserAgent.indexOf("Windows Vista") > -1;
-                if (isWinVista) return {
-                    name: "windows",
-                    version: "vista"
-                };
-                var isWin7 = sUserAgent.indexOf("Windows NT 6.1") > -1 || sUserAgent.indexOf("Windows 7") > -1;
-                if (isWin7) return {
-                    name: "windows",
-                    version: "7"
-                };
-                var isWin8 = sUserAgent.indexOf("Windows NT 6.2") > -1 || sUserAgent.indexOf("Windows NT 6.3") || sUserAgent.indexOf("Windows 8") > -1;
-                if (isWin8) return {
-                    name: "windows",
-                    version: "8"
-                };
-                var isWin10 = sUserAgent.indexOf("Windows NT 10") > -1 || sUserAgent.indexOf("Windows 10") > -1;
-                if (isWin10) return {
-                    name: "windows",
-                    version: "10"
-                };
-            }
-
-            var isUnix = (navigator.platform == "X11") && !isWin && !isMac;
-            if (isUnix) return {
-                name: "unix",
-                version: ""
-            };
-
-            return {
-                name: "",
-                version: ""
-            };
-        }
+        self.parsingUserAgent = parsingUserAgent();
 
         /**
          * 获取请求参数
@@ -461,7 +183,8 @@ window.xwpk = (function(){
             if(params["osName"] == null){
                 var infoOS;
                 try{
-                    infoOS = getOS();
+                    //infoOS = getOS();
+                    infoOS = self.parsingUserAgent.getOS();
                 }catch(e){
                     params["errorMsg"] = "getOS-----:"+encodeURIComponent( e.message );
                     infoOS = { name: "", version: "" };
@@ -506,18 +229,6 @@ window.xwpk = (function(){
                 params["pagePath"] = params["pagePath"] || encodeURIComponent( document.location.pathname || "" );
 
                 /**
-                 * 来源URL信息收集
-                 * 暂时取消参数字段的收集，来至搜索引擎的参数过长，信息重叠
-                 */
-                if(params["referrerUrl"] == null){
-                    var referrer = getDomainPathParameter( getCookie("bi_refer") );
-                    params["referrerUrl"] = encodeURIComponent(referrer.referrer);
-                    params["referrerDomain"] = referrer.domain;
-                    params["referrerPath"] = encodeURIComponent(referrer.path);
-                    params["referrerParameter"] = "";
-                }
-
-                /**
                  * 搜索引擎数据收集
                  * searchEngine：来源搜索引擎类型
                  * searchKeyword：搜索关键字
@@ -537,17 +248,53 @@ window.xwpk = (function(){
                     }
                 }
 
+                /**
+                 * 来源URL信息收集
+                 * 暂时取消参数字段的收集，来至搜索引擎的参数过长，信息重叠
+                 */
+                if(!params["referrerUrl"]){
+                    var referrer = getDomainPathParameter( getCookie("bi_refer") );
+                    if(params["source"] == "b"){
+                        params["referrerUrl"] = encodeURIComponent(referrer.referrer);
+                    }else{
+                        params["referrerUrl"] = encodeURIComponent(referrer.domain + referrer.path);
+                    }
+
+                    params["referrerDomain"] = referrer.domain;
+                    params["referrerPath"] = encodeURIComponent(referrer.path);
+                    params["referrerParameter"] = "";
+                }
+
+                //将userAgent输出，查看未知系统
+                //params["userAgent"] = self.parsingUserAgent.getUA();
+
                 //pc or mobile
-                params["deviceType"] = params["deviceType"] || getDeviceType();
+                //params["deviceType"] = params["deviceType"] || getDeviceType();
+                params["deviceType"] = params["deviceType"] || self.parsingUserAgent.getDT();
 
                 //浏览器信息
                 if(params["exploreName"] == null){
-                    var browserInfo = getBrowserInfo();
-                    for(key in browserInfo){
-                        params[key] = browserInfo[key];
+                    //var browserInfo = getBrowserInfo();
+                    //for(key in browserInfo){
+                    //    params[key] = browserInfo[key];
+                    //}
+
+                    var browserInfo = {name:"",version:""};
+                    try{
+                        browserInfo = self.parsingUserAgent.getBI();
+                    }catch(e){
+                        params["errorMsg"] = "getBI-----:"+encodeURIComponent( e.message );
                     }
+                    params["exploreName"] = browserInfo.name;
+                    params["exploreVersion"] = browserInfo.version;
+
                 }
             }
+
+            //获取到bi_refer后，将其cookie删除
+            setCookie("bi_refer","","s0","");
+            setCookie("bi_refer","","s0","benlai.com");
+            delCookie("bi_refer");
 
             //将主要的参数合并到发送参数中
             for(key in mainParams){
@@ -582,80 +329,6 @@ window.xwpk = (function(){
         }
 
         /**
-         * 获取设备信息参数
-         * @returns {string} data={}
-         */
-        function getEquipmentInfo(){
-            //设备号
-            params["uuid"] = self.equipmentInfo["uuid"] || "";
-
-            //当前app页面统计请求发送的时间
-            params["visitTime"] = self.equipmentInfo["visitTime"] || "";
-
-            //会话id  app token
-            params["visiterId"] = self.equipmentInfo["visiterId"] || "";
-
-            //安装当天（自然日）使用为新客，否则为老客；新客：1，老客：2
-            //params["isNewVisiter"] = self.equipmentInfo["isNewVisiter"] || "";
-
-            //统计请求类型;pageView:页面初始请求；event:事件发送请求
-            //params["tjType"] = self.equipmentInfo["tjType"] || "";
-
-            //页面标题
-            params["title"] = self.equipmentInfo["title"] || "";
-
-            //当前页标识
-            params["pageUrl"] = self.equipmentInfo["pageUrl"] || "";
-
-            //来源页标识
-            params["referrerUrl"] = self.equipmentInfo["referrerUrl"] || "";
-
-            //当前app所使用的系统名称；ios/android
-            params["osName"] = self.equipmentInfo["osName"] || "";
-
-            //系统版本号
-            params["osVersion"] = self.equipmentInfo["osVersion"] || "";
-
-            //屏幕分辨率
-            params["screenPoint"] = self.equipmentInfo["screenPoint"] || "";
-
-            //客户sysno
-            params["customerId"] = self.equipmentInfo["customerId"] || "";
-
-            //站点id;例如：华南，华北的编号
-            params["webSiteId"] = self.equipmentInfo["webSiteId"] || "";
-
-            //城市id
-            params["cityId"] = self.equipmentInfo["cityId"] || "";
-
-            //推送号
-            params["jpushID"] = self.equipmentInfo["jpushID"] || "";
-
-            //网络模式， 待定(移动，联通)
-            params["netModel"] = self.equipmentInfo["netModel"] || "";
-
-            //设备品牌名称
-            params["devBrand"] = self.equipmentInfo["devBrand"] || "";
-
-            //app渠道
-            params["appChannel"] = self.equipmentInfo["appChannel"] || "";
-
-            //app版本号
-            params["appVersion"] = self.equipmentInfo["appVersion"] || "";
-
-            //app安装时间，时间戳
-            params["appInstallTime"] = self.equipmentInfo["appInstallTime"] || "";
-
-            //客户端token
-            params["token"] = self.equipmentInfo["token"] || "";
-
-            //app使用时间间隔，待定
-            //params["interval"] = self.equipmentInfo["interval"] || "";
-
-            return "data=" + encodeURIComponent( JSON.stringify(params) );
-        }
-
-        /**
          * 获取活动参数 _bitrack
          * 暂定web站和m站一致取法
          * @returns {*}
@@ -682,7 +355,7 @@ window.xwpk = (function(){
                 parentNode = document.getElementById("Content");
                 if(!!parentNode && !!parentNode.innerHTML){
                     goodsIds = parentNode.innerHTML.match(/product=" *\d+"/g);
-                    if(goodsIds.length){
+                    if(goodsIds && goodsIds.length){
                         goodsIds = goodsIds.slice(0,20).join(",");
                         goodsIds = goodsIds.match(/\d+/g).join(",");
                     }
@@ -702,7 +375,7 @@ window.xwpk = (function(){
                 parentNode = document.getElementById("thelist");
                 if(!!parentNode && !!parentNode.innerHTML){
                     goodsIds = parentNode.innerHTML.match(/addProductToCart\(\d+/g);
-                    if(goodsIds.length>0){
+                    if(goodsIds && goodsIds.length>0){
                         goodsIds = goodsIds.slice(0,20).join(",");
                         goodsIds = goodsIds.match(/\d+/g).join(",");
                     }
@@ -813,24 +486,27 @@ window.xwpk = (function(){
          * @returns {*}
          */
         function getSiteSearchKeyword(){
-            if(appType == "web"){   //web站
-                var pms = location.search.substr(1).split("&");
-                for(var i=0;i<pms.length;i++){
-                    if(pms[i].indexOf("keyword")>=0){
-                        return pms[i].split("=")[1];
-                    }
-                }
-            }else{  //m站
-                var paths = document.location.pathname.split("/");
-                if(paths.indexOf("showCategory")>=0){
-                    return null;
+            var pms = location.search.substr(1).split("&");
+            for(var i=0;i<pms.length;i++){
+                //web站
+                if(appType == "web" && pms[i].indexOf("keyword")>=0){
+                    return pms[i].split("=")[1];
                 }
 
-                var idx = paths.indexOf("search");
-                if(idx>=0){
-                    return paths[idx+1];
+                //m站
+                if(appType == "m" && pms[i].indexOf("key")>=0){
+                    return pms[i].split("=")[1];
                 }
             }
+            //var paths = document.location.pathname.split("/");
+            //if(paths.indexOf("showCategory")>=0){
+            //    return null;
+            //}
+            //
+            //var idx = paths.indexOf("search");
+            //if(idx>=0){
+            //    return paths[idx+1];
+            //}
             return null
         }
 
@@ -852,36 +528,6 @@ window.xwpk = (function(){
         }
 
         /**
-         * 废弃
-         * 处理搜索引擎的特殊参数
-         * @param type
-         */
-        function disposeSEParams(type){
-            switch (type){
-                case "baidu":
-                    if(params["referrerParameter"] && params["referrerParameter"].indexOf("clk_info")>=0){
-                        var pms = params["referrerParameter"].split("&");
-                        for(var i=0;i<pms.length;i++){
-                            if(pms[i].indexOf("clk_info")>=0){
-                                pms[i] = "clk_info=";
-                            }
-                        }
-                        params["referrerParameter"] = pms.join("&");
-                        params["referrerUrl"] = params["referrerDomain"] + params["referrerPath"] +"?"+ params["referrerParameter"];
-                    }
-                    break;
-                case "sogou":
-                    break;
-                case "360":
-                    break;
-                case "google":
-                    break;
-                case "yahoo":
-                    break;
-            }
-        }
-
-        /**
          * 判断设备类型
          * @returns {string}
          */
@@ -889,7 +535,7 @@ window.xwpk = (function(){
             var userAgentInfo = navigator.userAgent;
 
             //将userAgent输出，查看未知系统
-            params["userAgent"] = userAgentInfo;
+            //params["userAgent"] = userAgentInfo;
 
             var Agents = ["Android", "iPhone",
                 "SymbianOS", "Windows Phone",
@@ -939,11 +585,11 @@ window.xwpk = (function(){
          */
         function sendRequest(request, callback){
             // 生产
-            //var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
+            var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
             // 测试
             //var apiUrl = "//192.168.60.28:8080/Bitj/js/commit_data.do";
             // 本地
-            var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
+            //var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
 
             var image = new Image(1, 1);
             image.onload = function () {
@@ -1162,8 +808,13 @@ window.xwpk = (function(){
                  * 对pams中的字符串进行编码，防止特殊符号对后台转json对象有影响
                  */
                 for(var key in pams){
-                    if(isObjectType(pams[key],"String"))
-                        pams[key] = encodeURIComponent(pams[key]);
+                    if(isObjectType(pams[key],"String")){
+                        if( /http:\/\//i.test(pams[key]) && /\?/i.test(pams[key]) ){
+                            pams[key] = encodeURIComponent(pams[key].split("?")[0]);
+                        }else{
+                            pams[key] = encodeURIComponent(pams[key]);
+                        }
+                    }
                 }
                 params["eventParams"] = pams;
 
@@ -1208,7 +859,7 @@ window.xwpk = (function(){
              * @param value 修改值
              */
             setParamVal: function(name, value){
-                mainParams[name] = value;
+                //mainParams[name] = value;
             },
             /**
              * 给本次访问设置自定义变量
@@ -1219,6 +870,14 @@ window.xwpk = (function(){
                 params["cv1"] = param.cv1;
                 params["cv2"] = param.cv2;
                 //setCookie("_bjtje", values.join("|"), "y5");
+            },
+            /**
+             * 设置渠道来源
+             * 用来标识开启M站页面的第三方渠道来源
+             * @param channelSource
+             */
+            setChannelSource: function(channelSource){
+                params["channelSource"] = channelSource;
             },
             /**
              * 测试，暂无用处
@@ -1237,80 +896,230 @@ window.xwpk = (function(){
         var user_agent = navigator.userAgent.toLowerCase();
 
         return {
-            getOS: function(){
-                if(!user_agent)
-                    return { name: "", version: "" };
-
-                if( /iphone os (\d+\_\d)/i.test(user_agent) )
-                    return { name: "iPhone IOS", version: RegExp['\x241'] };
-
-                if( /ipad os (\d+\_\d)/i.test(user_agent) )
-                    return { name: "iPad IOS", version: RegExp['\x241'] };
-
-                if( /iphone os (\d+\_\d)/i.test(user_agent) && user_agent.indexOf("ipod") > -1 )
-                    return { name: "iPod IOS", version: RegExp['\x241'] };
-
-                var isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
-                if (isMac){
-                    var reg;
-                    try{
-                        var a = /mac os x (\d+\.\d+)/i.test(user_agent);
-                        return { name: "mac", version: RegExp['\x241'] };
-                    }catch(e){
-                        eventGenerator.setParamVal("errorMsg", "getOS---mac---"+e.message);
+            getUA: function(){
+                return user_agent;
+            },
+            /**
+             * 获取设备类型
+             * @returns {string}
+             */
+            getDT: function(){
+                var Agents = ["android", "iphone", "symbianos", "windows phone", "ipad", "ipod", "mac os"];
+                var flag = true;
+                for(var v = 0; v < Agents.length; v++){
+                    if(user_agent.indexOf(Agents[v]) > 0){
+                        flag = false;
+                        break;
                     }
+                }
+                return flag?"pc":"mobile";
+            },
+            /**
+             * 浏览器信息
+             */
+            getBI: function(){
+                var opera = window.opera;
+
+                //micromessenger 微信 app 优先级最高
+                if ( /micromessenger\/(\d+\.\d)/i.test(user_agent) ) {
+                    return { name: "wechat", version: RegExp['\x241'] };
+                }
+
+                //QQ browser
+                if ( /qqbrowser\/(\d+\.\d)/i.test(user_agent) ) {
+                    return { name: "qq", version: RegExp['\x241'] };
+                }
+
+                //QQ 新闻app
+                if ( /qqnews\/(\d+\.\d)/i.test(user_agent) ) {
+                    return { name: "qq news", version: RegExp['\x241'] };
+                }
+
+                //QQ app
+                if ( /qq\/(\d+\.\d)/i.test(user_agent) ) {
+                    return { name: "qq app", version: RegExp['\x241'] };
+                }
+
+                //baidu browser
+                if ( /((baidu)|(bidu))browser(\/|\s)(\d\.\d)/i.test(user_agent) ) {
+                    return { name: "baidu", version: RegExp['\x245'] };
+                }
+
+                //baidu app
+                if ( /baiduboxapp\/((\d\_(\d+\.)+\d)|(\d\.\d))/i.test(user_agent) ) {
+                    return { name: "baidu app", version: RegExp['\x241'] };
+                }
+
+                //支付宝 app
+                //mozilla/5.0 (linux; u; android 6.0.1; zh-cn; mi 5s plus build/mxb48t) applewebkit/534.30 (khtml, like gecko) version/4.0 ucbrowser/1.0.0.100 u3/0.8.0 mobile safari/534.30 alipaydefined(nt:wifi,ws:393|698|2.75) aliapp(ap/10.0.0.122205) alipayclient/10.0.0.122205 language/zh-hans usestatusbar/true
+                if ( /alipayclient\/(\d(\d+\.)+\d+)/i.test(user_agent) ) {
+                    return { name: "alipay", version: RegExp['\x241'] };
+                }
+
+                //ucbrowser
+                if ( /ucbrowser\/(\d+\.\d)/i.test(user_agent) || /ucweb\/(\d+\.\d)/i.test(user_agent) ) {
+                    return { name: "uc", version: RegExp['\x241'] };
+                }
+
+                //搜狗浏览器`SE 2.X
+                if ( /sogoumobilebrowser\/(\d+\.\d)/i.test(user_agent) || /se (\d+)\.*/i.test(user_agent) ) {
+                    return { name: "sogou", version: RegExp['\x241'] };
+                }
+
+                //猎豹
+                if ( /liebaofast\/(\d+\.\d)/i.test(user_agent) ) {
+                    return { name: "liebao", version: RegExp['\x241'] };
+                }
+
+                //MxBrowser mxbrowser 遨游
+                if ( /mxbrowser\/(\d+\.\d)/i.test(user_agent) || /maxthon\/(\d+\.\d)/i.test(user_agent) ) {
+                    return { name: "aoyou", version: RegExp['\x241'] };
+                }
+
+                //2345浏览器
+                if ( /2345browser\/(\d+\.\d)/i.test(user_agent) ) {
+                    return { name: "2345", version: RegExp['\x241'] };
+                }
+
+                //ubrowser
+                if ( /ubrowser\/(\d+\.\d)/i.test(user_agent) ) {
+                    return { name: "ubrowser", version: RegExp['\x241'] };
+                }
+
+                //小米浏览器
+                if ( /xiaomi\/miuibrowser\/(\d+\.\d)/i.test(user_agent) ) {
+                    return { name: "xiaomi", version: RegExp['\x241'] };
+                }
+
+                //绿茶浏览器
+                if ( /lebrowser\/(\d+\.\d)/i.test(user_agent) ) {
+                    return { name: "lvcha", version: RegExp['\x241'] };
+                }
+
+                //360 会有将firefox统计成360的情况
+                //if((window.navigator.mimeTypes[40] || !window.navigator.mimeTypes.length)){
+                //    browser.exploreName = "360";
+                //    browser.exploreVersion = "";
+                //}
+                if ( /360se/i.test(user_agent) ) {
+                    return { name: "safari", version: "" };
+                }
+
+                //isIE6   : /msie 6.0/.test(UserAgent), // IE6
+                //isIE7   : /msie 7.0/.test(UserAgent), // IE7
+                //isIE8   : /msie 8.0/.test(UserAgent), // IE8
+                //isIE9   : /msie 9.0/.test(UserAgent), // IE9
+                //isIE10  : /msie 10.0/.test(UserAgent), // IE10
+                //isIE11  : /msie 11.0/.test(UserAgent), // IE11
+                //ie
+                if (/(msie\s|trident.*rv:)([\w.]+)/.test(user_agent)) {
+                    var version = 0;
+                    var v1 = user_agent.match(/(?:msie\s([\w.]+))/);
+                    var v2 = user_agent.match(/(?:trident.*rv:([\w.]+))/);
+                    if (v1 && v2 && v1[1] && v2[1]) {
+                        version = Math.max(v1[1] * 1, v2[1] * 1);
+                    } else if (v1 && v1[1]) {
+                        version = v1[1] * 1;
+                    } else if (v2 && v2[1]) {
+                        version = v2[1] * 1;
+                    } else {
+                        version = 0;
+                    }
+
+                    return {
+                        name: "ie",
+                        version: version
+                    };
+                }
+
+                //chrome
+                //"mozilla/5.0 (windows nt 6.1; wow64) applewebkit/537.36 (khtml, like gecko) chrome/48.0.2564.97 safari/537.36"
+                if ( /chrome\/(\d+\.\d)/i.test(user_agent) || /crios\/(\d+\.\d)/i.test(user_agent) ) {
+                    return { name: "chrome", version: RegExp['\x241'] };
+                }
+
+                //safari
+                if ( /(\d+\.\d)?(?:\.\d)?\s+safari\/?(\d+\.\d+)?/i.test(user_agent) ) {
+                    return { name: "safari", version: (RegExp['\x241'] || RegExp['\x242']) };
+                }
+
+                //firefox
+                if ( /firefox\/(\d+\.\d)/i.test(user_agent) ) {
+                    return { name: "firefox", version: RegExp['\x241'] };
+                }
+
+                // Opera
+                //var isOpera = /opr\/(\d+\.\d)/i.test(user_agent) || /presto\/(\d+\.\d)/i.test(user_agent);
+                if ( /opera/i.test(user_agent) ){
+                    return { name: "opera", version: "" };
+                }
+
+                return browser;
+            },
+            /**
+             * 系统信息
+             * @returns {*}
+             */
+            getOS: function(){
+                if(!user_agent){
+                    return { name: "", version: "" };
+                }
+
+                if( /iphone os (\d+\_\d)/i.test(user_agent) ){
+                    return {
+                        name: "iPhone IOS",
+                        version: ""
+                        //version: RegExp['\x241']
+                    };
+                }
+                if( /ipad os (\d+\_\d)/i.test(user_agent) ){
+                    return { name: "iPad IOS", version: "" };
+                }
+                if( /ipod/i.test(user_agent) ){
+                    return { name: "iPod IOS", version: "" };
+                }
+                if( /mac os x/i.test(user_agent) ){
                     return { name: "mac", version: "" };
                 }
 
                 //安卓系统
-                if( /android (\d+\.\d)/i.test(user_agent) )
-                    return { name: "android", version: RegExp['\x241'] };
+                if( /android (\d+\.\d)/i.test(user_agent) ){
+                    return { name: "android", version: "" };
+                }
 
-                if( /linux/i.test(user_agent) )
+                if( /windows nt 5.0/i.test(user_agent) ){
+                    return { name: "windows", version: "2000" };
+                }
+                if( /windows nt 5.1/i.test(user_agent) ){
+                    return { name: "windows", version: "xp" };
+                }
+                if( /windows nt 5.2/i.test(user_agent) ){
+                    return { name: "windows", version: "2003" };
+                }
+                if( /windows nt 6.0/i.test(user_agent) ){
+                    return { name: "windows", version: "vista" };
+                }
+                if( /windows nt 6.1/i.test(user_agent) ){
+                    return { name: "windows", version: "7" };
+                }
+                if( /windows nt 6.2/i.test(user_agent) ){
+                    return { name: "windows", version: "8" };
+                }
+                if( /windows nt 6.3/i.test(user_agent) ){
+                    return { name: "windows", version: "8.1" };
+                }
+                if( /windows nt 10/i.test(user_agent) ){
+                    return { name: "windows", version: "10" };
+                }
+
+                if( /linux/i.test(user_agent) ){
                     return { name: "linux", version: "" };
-
-                var isWin = (navigator.platform == "Win32") || (navigator.platform == "Windows");
-                if (isWin) {
-                    var isWin2K = user_agent.indexOf("windows NT 5.0") > -1 || user_agent.indexOf("windows 2000") > -1;
-                    if (isWin2K) return {
-                        name: "windows",
-                        version: "2000"
-                    };
-                    var isWinXP = user_agent.indexOf("windows NT 5.1") > -1 || user_agent.indexOf("windows XP") > -1;
-                    if (isWinXP) return {
-                        name: "windows",
-                        version: "xp"
-                    };
-                    var isWin2003 = user_agent.indexOf("windows NT 5.2") > -1 || user_agent.indexOf("windows 2003") > -1;
-                    if (isWin2003) return {
-                        name: "windows",
-                        version: "2003"
-                    };
-                    var isWinVista= user_agent.indexOf("windows NT 6.0") > -1 || user_agent.indexOf("windows Vista") > -1;
-                    if (isWinVista) return {
-                        name: "windows",
-                        version: "vista"
-                    };
-                    var isWin7 = user_agent.indexOf("windows NT 6.1") > -1 || user_agent.indexOf("windows 7") > -1;
-                    if (isWin7) return {
-                        name: "windows",
-                        version: "7"
-                    };
-                    var isWin8 = user_agent.indexOf("windows NT 6.2") > -1 || user_agent.indexOf("windows NT 6.3") || user_agent.indexOf("windows 8") > -1;
-                    if (isWin8) return {
-                        name: "windows",
-                        version: "8"
-                    };
-                    var isWin10 = user_agent.indexOf("windows NT 10") > -1 || user_agent.indexOf("windows 10") > -1;
-                    if (isWin10) return {
-                        name: "windows",
-                        version: "10"
-                    };
                 }
 
                 var isUnix = (navigator.platform == "X11") && !isWin && !isMac;
-                if (isUnix)
+                if (isUnix){
                     return { name: "unix", version: "" };
+                }
 
                 return { name: "", version: "" };
             }
@@ -1347,15 +1156,15 @@ window.xwpk = (function(){
         keyToModel = {
             "baidu": {
                 "brand": ["bzclk.baidu.com/adrc.php","m.baidu.com/s"],
-                "sem": ["baidu.com/baidu.php"],
+                "sem": ["baidu.com/baidu.php"]
             },
             "sogou": {
                 "brand": ["ctb.brand.sogou.com"],
-                "sem": ["www.sogou.com/bill_cpc"],
+                "sem": ["www.sogou.com/bill_cpc"]
             },
             "360": {
                 "brand": ["click.dsp.com"],
-                "sem": ["e.tf.360.cn"],
+                "sem": ["e.tf.360.cn"]
             },
             "google": null,
             "yahoo": null
@@ -1365,11 +1174,6 @@ window.xwpk = (function(){
             //获取cookie 中的 referrerUrl
             biRefer = getCookie("bi_refer") || document.referrer || "";
             if(!biRefer) return false;
-
-            //获取到bi_refer后，将其cookie删除
-            setCookie("bi_refer","","s0","");
-            setCookie("bi_refer","","s0","benlai.com");
-            delCookie("bi_refer");
 
             //拆分url和params
             var urls = biRefer.split("?");
@@ -1650,3 +1454,395 @@ window.xwpk = (function(){
 //    "google": {},
 //    "yahoo": {}
 //};
+
+
+/**
+ * 获取设备信息参数
+ * 废弃
+ * @returns {string} data={}
+ */
+//function getEquipmentInfo(){
+//    //设备号
+//    params["uuid"] = self.equipmentInfo["uuid"] || "";
+//
+//    //当前app页面统计请求发送的时间
+//    params["visitTime"] = self.equipmentInfo["visitTime"] || "";
+//
+//    //会话id  app token
+//    params["visiterId"] = self.equipmentInfo["visiterId"] || "";
+//
+//    //安装当天（自然日）使用为新客，否则为老客；新客：1，老客：2
+//    //params["isNewVisiter"] = self.equipmentInfo["isNewVisiter"] || "";
+//
+//    //统计请求类型;pageView:页面初始请求；event:事件发送请求
+//    //params["tjType"] = self.equipmentInfo["tjType"] || "";
+//
+//    //页面标题
+//    params["title"] = self.equipmentInfo["title"] || "";
+//
+//    //当前页标识
+//    params["pageUrl"] = self.equipmentInfo["pageUrl"] || "";
+//
+//    //来源页标识
+//    params["referrerUrl"] = self.equipmentInfo["referrerUrl"] || "";
+//
+//    //当前app所使用的系统名称；ios/android
+//    params["osName"] = self.equipmentInfo["osName"] || "";
+//
+//    //系统版本号
+//    params["osVersion"] = self.equipmentInfo["osVersion"] || "";
+//
+//    //屏幕分辨率
+//    params["screenPoint"] = self.equipmentInfo["screenPoint"] || "";
+//
+//    //客户sysno
+//    params["customerId"] = self.equipmentInfo["customerId"] || "";
+//
+//    //站点id;例如：华南，华北的编号
+//    params["webSiteId"] = self.equipmentInfo["webSiteId"] || "";
+//
+//    //城市id
+//    params["cityId"] = self.equipmentInfo["cityId"] || "";
+//
+//    //推送号
+//    params["jpushID"] = self.equipmentInfo["jpushID"] || "";
+//
+//    //网络模式， 待定(移动，联通)
+//    params["netModel"] = self.equipmentInfo["netModel"] || "";
+//
+//    //设备品牌名称
+//    params["devBrand"] = self.equipmentInfo["devBrand"] || "";
+//
+//    //app渠道
+//    params["appChannel"] = self.equipmentInfo["appChannel"] || "";
+//
+//    //app版本号
+//    params["appVersion"] = self.equipmentInfo["appVersion"] || "";
+//
+//    //app安装时间，时间戳
+//    params["appInstallTime"] = self.equipmentInfo["appInstallTime"] || "";
+//
+//    //客户端token
+//    params["token"] = self.equipmentInfo["token"] || "";
+//
+//    //app使用时间间隔，待定
+//    //params["interval"] = self.equipmentInfo["interval"] || "";
+//
+//    return "data=" + encodeURIComponent( JSON.stringify(params) );
+//}
+
+
+/**
+ * 废弃
+ * 处理搜索引擎的特殊参数
+ * @param type
+ */
+//function disposeSEParams(type){
+//    switch (type){
+//        case "baidu":
+//            if(params["referrerParameter"] && params["referrerParameter"].indexOf("clk_info")>=0){
+//                var pms = params["referrerParameter"].split("&");
+//                for(var i=0;i<pms.length;i++){
+//                    if(pms[i].indexOf("clk_info")>=0){
+//                        pms[i] = "clk_info=";
+//                    }
+//                }
+//                params["referrerParameter"] = pms.join("&");
+//                params["referrerUrl"] = params["referrerDomain"] + params["referrerPath"] +"?"+ params["referrerParameter"];
+//            }
+//            break;
+//        case "sogou":
+//            break;
+//        case "360":
+//            break;
+//        case "google":
+//            break;
+//        case "yahoo":
+//            break;
+//    }
+//}
+
+
+/**
+ * 获取浏览器信息
+ * @returns {{b_n: string, b_v: number}}
+ */
+//function getBrowserInfo(userAgent){
+//    var agent = userAgent || navigator.userAgent.toLowerCase(),
+//        opera = window.opera,
+//        browser = {
+//            exploreName: "",
+//            exploreVersion: ""
+//        };
+//
+//    //micromessenger 微信 app 优先级最高
+//    var isWechat = /micromessenger\/(\d+\.\d)/i.test(agent);
+//    if (isWechat) {
+//        browser.exploreName = "wechat";
+//        browser.exploreVersion = RegExp['\x241'];
+//        return browser;
+//    }
+//
+//    var version = 0;
+//    //ie
+//    if (/(msie\s|trident.*rv:)([\w.]+)/.test(agent)) {
+//        var v1 = agent.match(/(?:msie\s([\w.]+))/);
+//        var v2 = agent.match(/(?:trident.*rv:([\w.]+))/);
+//        if (v1 && v2 && v1[1] && v2[1]) {
+//            version = Math.max(v1[1] * 1, v2[1] * 1);
+//        } else if (v1 && v1[1]) {
+//            version = v1[1] * 1;
+//        } else if (v2 && v2[1]) {
+//            version = v2[1] * 1;
+//        } else {
+//            version = 0;
+//        }
+//
+//        browser.exploreName = "ie";
+//        browser.exploreVersion = version;
+//    }
+//
+//    //safari
+//    var isSafari = /(\d+\.\d)?(?:\.\d)?\s+safari\/?(\d+\.\d+)?/i.test(agent);
+//    if (isSafari) {
+//        browser.exploreName = "safari";
+//        browser.exploreVersion = (RegExp['\x241'] || RegExp['\x242']);
+//    }
+//
+//    //chrome
+//    var isChrome = /chrome\/(\d+\.\d)/i.test(agent) || /crios\/(\d+\.\d)/i.test(agent);
+//    if (isChrome) {
+//        browser.exploreName = "chrome";
+//        browser.exploreVersion = RegExp['\x241'];
+//    }
+//
+//    //firefox
+//    var isFirefox = /firefox\/(\d+\.\d)/i.test(agent);
+//    if (isFirefox) {
+//        browser.exploreName = "firefox";
+//        browser.exploreVersion = RegExp['\x241'];
+//    }
+//
+//    //QQ browser
+//    var isQQ_pc = /qqbrowser\/(\d+\.\d)/i.test(agent) && !/micromessenger\/(\d+\.\d)/i.test(agent);
+//    if (isQQ_pc) {
+//        browser.exploreName = "qq";
+//        browser.exploreVersion = RegExp['\x241'];
+//    }
+//
+//    //QQ 新闻app
+//    var isQQ_news = /qqnews\/(\d+\.\d)/i.test(agent);
+//    if (isQQ_news) {
+//        browser.exploreName = "qq news";
+//        browser.exploreVersion = RegExp['\x241'];
+//    }
+//
+//    //QQ app
+//    var isQQ_app = /qq\/(\d+\.\d)/i.test(agent);
+//    if (isQQ_app) {
+//        browser.exploreName = "qq app";
+//        browser.exploreVersion = RegExp['\x241'];
+//        return browser;
+//    }
+//
+//    //baidu browser
+//    var isBaidu = /((baidu)|(bidu))browser(\/|\s)(\d\.\d)/i.test(agent);
+//    if (isBaidu) {
+//        browser.exploreName = "baidu";
+//        browser.exploreVersion = RegExp['\x245'];
+//    }
+//
+//    //baidu app
+//    var isBaidu_app = /baiduboxapp\/((\d\_(\d+\.)+\d)|(\d\.\d))/i.test(agent);
+//    if (isBaidu_app) {
+//        browser.exploreName = "baidu app";
+//        browser.exploreVersion = RegExp['\x241'];
+//        return browser;
+//    }
+//
+//    //baidu app
+//    var isBaidu_app = /alipayclient\/((\d\_(\d+\.)+\d)|(\d\.\d))/i.test(agent);
+//    if (isBaidu_app) {
+//        browser.exploreName = "alipay";
+//        browser.exploreVersion = RegExp['\x241'];
+//        return browser;
+//    }
+//
+//    //ucbrowser
+//    var isUC = /ucbrowser\/(\d+\.\d)/i.test(agent) || /ucweb\/(\d+\.\d)/i.test(agent);
+//    if (isUC) {
+//        browser.exploreName = "uc";
+//        browser.exploreVersion = RegExp['\x241'];
+//    }
+//
+//    //搜狗浏览器`SE 2.X
+//    var isSogou = /sogoumse,sogoumobilebrowser\/(\d+\.\d)/i.test(agent) || /se (\d+)\.*/i.test(agent);
+//    if (isSogou) {
+//        browser.exploreName = "sogou";
+//        browser.exploreVersion = RegExp['\x241'];
+//    }
+//
+//    //猎豹
+//    var isLB = /liebaofast\/(\d+\.\d)/i.test(agent);
+//    if (isLB) {
+//        browser.exploreName = "liebao";
+//        browser.exploreVersion = RegExp['\x241'];
+//    }
+//
+//    //MxBrowser mxbrowser 遨游
+//    var isAY = /mxbrowser\/(\d+\.\d)/i.test(agent) || /maxthon\/(\d+\.\d)/i.test(agent);
+//    if (isAY) {
+//        browser.exploreName = "aoyou";
+//        browser.exploreVersion = RegExp['\x241'];
+//    }
+//
+//    //2345浏览器
+//    var isAY = /2345browser\/(\d+\.\d)/i.test(agent);
+//    if (isAY) {
+//        browser.exploreName = "2345";
+//        browser.exploreVersion = RegExp['\x241'];
+//    }
+//
+//    //ubrowser
+//    var isU = /ubrowser\/(\d+\.\d)/i.test(agent);
+//    if (isU) {
+//        browser.exploreName = "ubrowser";
+//        browser.exploreVersion = RegExp['\x241'];
+//    }
+//
+//    //小米浏览器
+//    var isXiaomi = /xiaomi\/miuibrowser\/(\d+\.\d)/i.test(agent);
+//    if (isXiaomi) {
+//        browser.exploreName = "xiaomi";
+//        browser.exploreVersion = RegExp['\x241'];
+//    }
+//
+//    //绿茶浏览器
+//    var isLe = /lebrowser\/(\d+\.\d)/i.test(agent);
+//    if (isLe) {
+//        browser.exploreName = "lvcha";
+//        browser.exploreVersion = RegExp['\x241'];
+//    }
+//
+//    //360 会有将firefox统计成360的情况
+//    //if((window.navigator.mimeTypes[40] || !window.navigator.mimeTypes.length)){
+//    //    browser.exploreName = "360";
+//    //    browser.exploreVersion = "";
+//    //}
+//
+//    // Opera
+//    var isOpera = /opr\/(\d+\.\d)/i.test(agent) || /presto\/(\d+\.\d)/i.test(agent);
+//    if ((!!opera && opera.version) || isOpera){
+//        browser.exploreName = "opera";
+//        browser.exploreVersion = opera ? parseFloat(opera.version()) : RegExp['\x241'];
+//    }
+//
+//    return browser;
+//}
+
+
+/**
+ * 获取本地操作系统信息
+ * @returns {*}
+ */
+//function getOS() {
+//    var sUserAgent = navigator.userAgent;
+//    if(!sUserAgent) return {
+//        name: "",
+//        version: ""
+//    };
+//
+//    var isIphone = sUserAgent.indexOf("iPhone;") > -1;
+//    if(isIphone) return {
+//        name: "iPhone IOS",
+//        //version: sUserAgent.match(/iPhone OS (\d+\_\d)/i)[1].replace("_",".")
+//        version: ""
+//    };
+//    var isIpad = sUserAgent.indexOf("iPad") > -1;
+//    if(isIpad) return {
+//        name: "iPad IOS",
+//        //version: sUserAgent.match(/iPad OS (\d+\_\d)/i)[1].replace("_",".")
+//        version: ""
+//    };
+//    var isIpod = sUserAgent.indexOf("iPod") > -1;
+//    if(isIpod) return {
+//        name: "iPod IOS",
+//        //version: sUserAgent.match(/iPhone OS (\d+\_\d)/i)[1].replace("_",".")
+//        version: ""
+//    };
+//
+//    var isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
+//    if (isMac) return {
+//        name: "mac",
+//        //version: "sUserAgent.match(/Mac OS X (\d+\.\d+)/i)[1]
+//        version: ""
+//    };
+//
+//    var isLinux = (String(navigator.platform).indexOf("Linux") > -1);
+//    if (isLinux){
+//        //var infoOS = sUserAgent.match(/(\(.*?\))+/g)[0];
+//        //["(Linux; Android 5.1; OPPO R9tm Build/LMY47I)", "(KHTML, like Gecko)"]
+//        var isAndroid = sUserAgent.indexOf('Android') > -1 || sUserAgent.indexOf('Adr') > -1;
+//        if( /Android (\d+\.\d)/i.test(sUserAgent) ){
+//            return {
+//                name: "android",
+//                version: sUserAgent.match(/Android (\d+\.\d)/i)[1]
+//            };
+//        }else{
+//            return {
+//                name: "linux",
+//                version: ""
+//            };
+//        }
+//    }
+//
+//    var isWin = (navigator.platform == "Win32") || (navigator.platform == "Windows");
+//    if (isWin) {
+//        var isWin2K = sUserAgent.indexOf("Windows NT 5.0") > -1 || sUserAgent.indexOf("Windows 2000") > -1;
+//        if (isWin2K) return {
+//            name: "windows",
+//            version: "2000"
+//        };
+//        var isWinXP = sUserAgent.indexOf("Windows NT 5.1") > -1 || sUserAgent.indexOf("Windows XP") > -1;
+//        if (isWinXP) return {
+//            name: "windows",
+//            version: "xp"
+//        };
+//        var isWin2003 = sUserAgent.indexOf("Windows NT 5.2") > -1 || sUserAgent.indexOf("Windows 2003") > -1;
+//        if (isWin2003) return {
+//            name: "windows",
+//            version: "2003"
+//        };
+//        var isWinVista= sUserAgent.indexOf("Windows NT 6.0") > -1 || sUserAgent.indexOf("Windows Vista") > -1;
+//        if (isWinVista) return {
+//            name: "windows",
+//            version: "vista"
+//        };
+//        var isWin7 = sUserAgent.indexOf("Windows NT 6.1") > -1 || sUserAgent.indexOf("Windows 7") > -1;
+//        if (isWin7) return {
+//            name: "windows",
+//            version: "7"
+//        };
+//        var isWin8 = sUserAgent.indexOf("Windows NT 6.2") > -1 || sUserAgent.indexOf("Windows NT 6.3") || sUserAgent.indexOf("Windows 8") > -1;
+//        if (isWin8) return {
+//            name: "windows",
+//            version: "8"
+//        };
+//        var isWin10 = sUserAgent.indexOf("Windows NT 10") > -1 || sUserAgent.indexOf("Windows 10") > -1;
+//        if (isWin10) return {
+//            name: "windows",
+//            version: "10"
+//        };
+//    }
+//
+//    var isUnix = (navigator.platform == "X11") && !isWin && !isMac;
+//    if (isUnix) return {
+//        name: "unix",
+//        version: ""
+//    };
+//
+//    return {
+//        name: "",
+//        version: ""
+//    };
+//}
