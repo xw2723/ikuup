@@ -801,8 +801,8 @@ window.xwpk = (function(){
              * @param value    统计数据集，json对象key：value
              */
             trackEvent: function(cat1, cat2, pams){
-                params["eventCat1"] = cat1;
-                params["eventCat2"] = cat2;
+                params["eventCat1"] = cat1 || "";
+                params["eventCat2"] = cat2 || "";
 
                 /**
                  * 对pams中的字符串进行编码，防止特殊符号对后台转json对象有影响
@@ -829,7 +829,7 @@ window.xwpk = (function(){
              * @param customerId
              */
             setCustomerId: function(customerId){
-                params["customerId"] = customerId;
+                params["customerId"] = customerId || "";
             },
             /**
              * 设置customerId，是否需要自动获取
@@ -851,7 +851,7 @@ window.xwpk = (function(){
              * @param siteId 站点编号
              */
             setSiteId: function(siteId){
-                params["siteId"] = siteId;
+                params["siteId"] = siteId || "";
             },
             /**
              * 修改参数值
@@ -867,8 +867,8 @@ window.xwpk = (function(){
              * @param value
              */
             setCustomVariable: function(param){
-                params["cv1"] = param.cv1;
-                params["cv2"] = param.cv2;
+                params["cv1"] = param.cv1 || "";
+                params["cv2"] = param.cv2 || "";
                 //setCookie("_bjtje", values.join("|"), "y5");
             },
             /**
@@ -877,7 +877,7 @@ window.xwpk = (function(){
              * @param channelSource
              */
             setChannelSource: function(channelSource){
-                params["channelSource"] = channelSource;
+                params["channelSource"] = channelSource || "";
             },
             /**
              * 测试，暂无用处
