@@ -164,10 +164,15 @@ window.xwpk = (function(){
             params["pageUrl"] =  params["pageUrl"] || encodeURIComponent( decodeURIComponent(document.location.href) || "" );
             params["screenPoint"] = params["screenPoint"] || (window.screen.width +"x"+ window.screen.height);
             params["bitrack"] = params["bitrack"] || getBitrack() || "";
+
             //站内搜索信息搜集
-            params["siteSearchKeyword"] = params["siteSearchKeyword"] || encodeURIComponent( (getSiteSearchKeyword()||"") );
-            params["siteSearchSkuCount"] = params["siteSearchSkuCount"] || getSiteSearchSKUCount() || "";
-            params["siteSearchTopSku"] = params["siteSearchTopSku"] || getSiteSearchTopSku() || "";
+            try{
+                params["siteSearchKeyword"] = params["siteSearchKeyword"] || encodeURIComponent( (getSiteSearchKeyword()||"") );
+                params["siteSearchSkuCount"] = params["siteSearchSkuCount"] || getSiteSearchSKUCount() || "";
+                params["siteSearchTopSku"] = params["siteSearchTopSku"] || getSiteSearchTopSku() || "";
+            }catch(e){
+                params["errorMsg"] = "The site search data collection => "+encodeURIComponent( e.message );
+            }
 
             /**
              * 搜集cookie中的数据
@@ -283,7 +288,7 @@ window.xwpk = (function(){
                     try{
                         browserInfo = self.parsingUserAgent.getBI();
                     }catch(e){
-                        params["errorMsg"] = "getBI-----:"+encodeURIComponent( e.message );
+                        params["errorMsg"] = "getBI() => "+encodeURIComponent( e.message );
                     }
                     params["exploreName"] = browserInfo.name;
                     params["exploreVersion"] = browserInfo.version;
@@ -360,16 +365,6 @@ window.xwpk = (function(){
                         goodsIds = goodsIds.match(/\d+/g).join(",");
                     }
                 }
-
-                try{
-                    window.setTimeout(function(){
-                        if(!!$ && !!$().delegate){
-                            $(parentNode).delegate(".box", "click", ["IMG","FONT","SPAN"], goodsClickCallBack);
-                        }
-                    },1);
-                }catch(e){
-                    params["errorMsg"] = "getSiteSearchTopSku------" + encodeURIComponent( e.message );
-                }
             }else{
                 //id = scroller thelist
                 parentNode = document.getElementById("thelist");
@@ -380,77 +375,9 @@ window.xwpk = (function(){
                         goodsIds = goodsIds.match(/\d+/g).join(",");
                     }
                 }
-
-                try{
-                    window.setTimeout(function() {
-                        if (!!$ && !!$().delegate) {
-                            $(parentNode).delegate("dl", "click", goodsClickCallBack);
-                        }
-                    },1);
-                }catch(e){
-                    params["errorMsg"] = "getSiteSearchTopSku------" + encodeURIComponent( e.message );
-                }
             }
 
             return goodsIds;
-        }
-
-        /**
-         * 商品点击事件回调
-         */
-        function goodsClickCallBack(e){
-            e = e || window.event;
-            if(!e.target) return;
-
-            var self = $(e.target);
-            var innerHtml = "",
-                goodsName = "",
-                sku = "",
-                href = "";
-
-
-            if(appType == "web"){
-                if(e.data.indexOf(e.target.nodeName)<0) return;
-
-                var aHref = self.parent().attr("href");
-                if(aHref.indexOf("javascript")<0){
-                    href = self.parent().attr("href");
-                }
-
-                innerHtml = self.parents(".box").html();
-                goodsName = innerHtml.match(/<p class="name">.*?(<font>(.*?)<\/font>).*?<\/p>?/)[2];
-                sku = innerHtml.match(/product=['"]*\s*(\d+)\s*['"]*/)[1];
-            }else{
-                if(e.target.nodeName=="A" && self.hasClass("btn")) return;
-
-                var dlNode = (e.target.nodeName == "DL") ? self : self.parents("DL");
-                var aNodes = dlNode.children("a");
-                for(var i=0;i<aNodes.length;i++){
-                    var n = $(aNodes[i]);
-                    if(n.attr("href").indexOf("javascript")<0){
-                        href = n.attr("href");
-                    }
-                }
-
-                innerHtml = dlNode.html();
-                goodsName = innerHtml.match(/<p(.*?)>(.*?)<\/p>/)[2];
-                sku = innerHtml.match(/addProductToCart\((\d+)/)[1];
-            }
-
-            if(!href) return;
-
-            //事件
-            params["tjType"] = "event";
-            params["eventCat1"] = "搜索商品";
-            params["eventCat2"] = "商品点击";
-            params["eventParams"] = {
-                goodsName: encodeURIComponent( goodsName ),
-                sku: sku,
-                url: encodeURIComponent( href )
-            };
-
-            //发送请求
-            sendRequest( getRequest() );
         }
 
         /**
@@ -461,22 +388,29 @@ window.xwpk = (function(){
             if(!params["siteSearchKeyword"]) return null;
 
             var count = null;
-            if(appType == "web"){
-                var searchBox = document.getElementById("SearchBox");
-                if(searchBox){
-                    var searchBoxText = searchBox.innerText;
-                    if(searchBoxText){
-                        var regs = searchBoxText.match(/[相关商品]+\s*\d+\s*[个]/);
-                        count = regs[0]?regs[0].match(/\d+/)[0]:null;
+            try{
+                if(appType == "web"){
+                    var searchBox = document.getElementById("SearchBox");
+                    if(searchBox){
+                        var searchBoxText = searchBox.innerText;
+                        if(searchBoxText){
+                            var regs = searchBoxText.match(/[相关商品]+\s*\d+\s*[个]/);
+                            if(regs && regs[0]){
+                                count = regs[0].match(/\d+/)[0];
+                            }
+                        }
+                    }
+                }else{
+                    var goodsBox = document.getElementById("scroller");
+                    if(!!goodsBox && !!goodsBox.innerHTML){
+                        var items = goodsBox.innerHTML.match(/class="price"/g);
+                        count = (items && items.length>0) ? items.length : null;
                     }
                 }
-            }else{
-                var goodsBox = document.getElementById("scroller");
-                if(!!goodsBox && !!goodsBox.innerHTML){
-                    var items = goodsBox.innerHTML.match(/class="price"/g);
-                    count = (items.length>0) ? items.length : null;
-                }
+            }catch(e){
+                params["errorMsg"] = "getSiteSearchSKUCount() => "+encodeURIComponent( e.message );
             }
+
             return count;
         }
 
@@ -507,7 +441,7 @@ window.xwpk = (function(){
             //if(idx>=0){
             //    return paths[idx+1];
             //}
-            return null
+            return null;
         }
 
         /**
@@ -585,9 +519,9 @@ window.xwpk = (function(){
          */
         function sendRequest(request, callback){
             // 生产
-            var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
+            //var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
             // 测试
-            //var apiUrl = "//192.168.60.28:8080/Bitj/js/commit_data.do";
+            var apiUrl = "//192.168.60.28:8080/Bitj/js/commit_data.do";
             // 本地
             //var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
 
@@ -860,6 +794,7 @@ window.xwpk = (function(){
              */
             setParamVal: function(name, value){
                 //mainParams[name] = value;
+                //params[name] = value || "";
             },
             /**
              * 给本次访问设置自定义变量
@@ -887,6 +822,104 @@ window.xwpk = (function(){
             }
         };
     };
+
+    /**
+     * 客户端事件
+     */
+    var eventDataFn = (function(){
+        var appType;
+
+        for(var i=0;i<window["_xwq"].length;i++){
+            var n = window["_xwq"][i];
+            if(n[0] == "setAppType"){
+                appType = n[1] || "web";
+                break;
+            }
+        }
+
+        return {
+            /**
+             * 搜索列表页，商品点击事件
+             */
+            searchListPage_goodsClick: function(){
+                if(!!$ && !!$().delegate){
+                    var parentNode,delegateNode;
+                    if(!appType || appType == "web"){
+                        parentNode = document.getElementById("Content");
+                        delegateNode = ".box";
+                    }else{
+                        parentNode = document.getElementById("thelist");
+                        delegateNode = "dl";
+                    }
+
+                    $(parentNode).delegate(delegateNode, "click", function(e){
+                        e = e || window.event;
+                        if(!e.target) return;
+
+                        var self = $(e.target);
+                        var innerHtml = "",
+                            goodsName = "",
+                            sku = "",
+                            href = "";
+
+                        if(!appType || appType == "web"){
+                            if(["IMG","FONT","SPAN"].indexOf(e.target.nodeName)<0) return;
+
+                            var aHref = self.parent().attr("href");
+                            if(aHref.indexOf("javascript")<0){
+                                href = self.parent().attr("href");
+                            }
+
+                            innerHtml = self.parents( delegateNode ).html();
+                            goodsName = innerHtml.match(/<p class="name">.*?(<font>(.*?)<\/font>).*?<\/p>?/)[2];
+                            sku = innerHtml.match(/product=['"]*\s*(\d+)\s*['"]*/)[1];
+                        }else{
+                            if(e.target.nodeName=="A" && self.hasClass("btn")) return;
+
+                            var dlNode = (e.target.nodeName == "DL") ? self : self.parents("DL");
+                            var aNodes = dlNode.children("a");
+                            for(var i=0;i<aNodes.length;i++){
+                                var n = $(aNodes[i]);
+                                if(n.attr("href").indexOf("javascript")<0){
+                                    href = n.attr("href");
+                                }
+                            }
+
+                            innerHtml = dlNode.html();
+                            goodsName = innerHtml.match(/<p(.*?)>(.*?)<\/p>/)[2];
+                            sku = innerHtml.match(/addProductToCart\((\d+)/)[1];
+                        }
+
+                        if(!href) return;
+
+                        //事件
+                        //params["tjType"] = "event";
+                        //params["eventCat1"] = "搜索商品";
+                        //params["eventCat2"] = "商品点击";
+                        //params["eventParams"] = {
+                        //    goodsName: encodeURIComponent( goodsName ),
+                        //    sku: sku,
+                        //    url: encodeURIComponent( href )
+                        //};
+
+                        window["_xwq"].push(["trackEvent", "搜索商品", "商品点击", {
+                            goodsName: encodeURIComponent( goodsName ),
+                            sku: sku,
+                            url: encodeURIComponent( href )
+                        }]);
+                        debugger;
+                    });
+                }
+            }
+        }
+    })();
+
+    try{
+        eventDataFn.searchListPage_goodsClick();
+    }catch(e){
+        params["errorMsg"] = "eventDataFn.searchListPage_goodsClick() => " + encodeURIComponent( e.message );
+    }
+
 
     /**
      * 获取系统、浏览器、设备信息
