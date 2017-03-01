@@ -237,12 +237,7 @@ setCookie(
 
 <!-- xwpk -->
 var _xwq = _xwq || [];
-//_xwq.push(['setParamVal', 'domain', 'test domain!!!']);
-//_xwq.push(['trackEvent','主流程', '首页加入购物车',
-//    {
-//        "current_url":"http://m.benlai.com/zt/161009yz?specialChar=pk_campaign=yizhifu,pk_kwd=yizhifu,_bitrack=221226&wxErrMsg=微信授权回调防CSRF攻击校验码验证失败&wxStatus=4"
-//    }
-//]);
+
 (function() {
     //生产
     //var u = "//bitj.benlai.com/Trafficstatistics/tj/";
@@ -250,17 +245,17 @@ var _xwq = _xwq || [];
     //var u = "//192.168.60.28:8080/Bitj/tj/";
     //本地
     //var u="//localhost:3000/piwik/";
-    var u="//10.10.110.113:3000/piwik/";
+    var u="//10.10.110.113:3333/piwik/";
 
     _xwq.push(["setSiteId", 888]);
-    _xwq.push(["setChannelSource", 789]);
+    _xwq.push(["setChannelSource", 789]);   //第三方渠道编号
     //_xwq.push(["setCustomVariable", {
     //    "cv1":"页面名称",
     //    "cv2":"页面说明"
     //}]);
     //_xwq.push(["setCustomerAuto", "off"]);    //设置customerId是否自动从cookie中获取， on自动(默认)，off关闭
     //_xwq.push(["setCustomerId", "101"]);      //设置customerId
-    //_xwq.push(["setAppType", "m"]);         //默认为web站, m, app
+    _xwq.push(["setAppType", "m"]);         //默认为web站, m, app
     //_xwq.push(["setEquipmentInfo", getDeviceInfo()]);   //默认为web站
 
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
@@ -268,6 +263,11 @@ var _xwq = _xwq || [];
 })();
 <!-- End xwpk Code -->
 
+
+//_xwq.push(['trackEvent','主流程', '首页加入购物车', {
+//    "current_url":"http://m.benlai.com/zt/161009yz?specialChar=pk_campaign=yizhifu,pk_kwd=yizhifu,_bitrack=221226&wxErrMsg=微信授权回调防CSRF攻击校验码验证失败&wxStatus=4"
+//}
+//]);
 
 //android 13
 //ios 12

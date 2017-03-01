@@ -25,7 +25,7 @@ indexModule.controller("indexCtrl", ["$scope", "pageData", function ($scope, pag
 
     this.init = function(){
         angular.element(document).ready(function(){
-
+            //alert("测试！！！");
         });
     };
 
