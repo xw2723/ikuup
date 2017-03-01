@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript" src="plugins/jquery/jquery-1.10.2.js"></script>
+</head>
+<body>
+
+
+<div class="ind_content">
+    <div class="newlist_s_fixedbox ">
+        <div class="newlist_new_tab" id="category_tab" style="margin-top: 0.55rem;">
+            <dl>
+                <dt>
+                    <a href="javascript:$('#otherSort').toggle();" id="titlezh" class="all on" data-select="1">综合</a>
+                    <a href="javascript:;" id="sortprice" data-sort="4">价格</a>
+                    <label><input type="text" id="promotion" onfocus="this.blur();">促销</label>
+                    <label><input type="checkbox" id="newProduct">新品</label>
+                </dt>
+                <dd id="otherSort" style="display: none;">
+                    <a id="sortzh" href="javascript:$('#otherSort').toggle();" class="on" data-select="0">综合排序</a>
+                    <a id="sortsale" href="javascript:$('#otherSort').toggle();" data-select="0">销量优先</a>
+                    <a id="sortcommon" href="javascript:$('#otherSort').toggle();" data-select="0">评价数优先</a>
+                </dd>
+            </dl>
+        </div>
+        <div class="newlist_s_filter">
+            <div id="Tippromite" class="newlist_s_prompt" style="display: none">抱歉当前分类下没有促销续为您展示所有商品</div>
+            <div id="Tipnewproduct" class="newlist_s_prompt" style="display: none">抱歉当前分类下没有新品继续为您展示所有商品</div>
+        </div>
+        <div class="newlist_s_filter_on" style="display: none">
+
+        </div>
+    </div>
+    <div class="newlist_s_list category mui-scroll-wrapper" id="wapper" data-pullrefresh="1">
+        <div class="mui-scroll" style="transform: translate3d(0px, 0px, 0px) translateZ(0px);">
+            <ul id="thelist" class="category_list" style="padding-top:0.9rem;"> <dl id="list_0"><a href="javascript:;" onclick="addProductToCart(44745,0,1)" class="btn"></a><a href="https://m.benlai.com/sh/product/44745"><dt id="mlist_0"><em>进口</em><img class="lazy" src="https://image1.benlailife.com/ProductImages/000/000/044/745/medium/51a55c79-0a56-4704-afad-90f1b3d12a0a.jpg" data-original="https://image1.benlailife.com/ProductImages/000/000/044/745/medium/51a55c79-0a56-4704-afad-90f1b3d12a0a.jpg" style="opacity: 1;"></dt><dd id="mmlist_0"><p id="productSname_0" class="name">佳沛意大利绿奇异果6粒（约450g） 果肉饱满，汁水充足，丰富的营养元素</p><p class="text">果肉饱满，汁水充足，丰富的营养元素</p><p class="price" id="price_0"><span>¥30</span></p><p class="comment" id="comment_0">504条评论<span>好评100%</span></p></dd></a></dl><dl id="list_1"><a href="javascript:;" onclick="addProductToCart(321106,0,1)" class="btn"></a><a href="https://m.benlai.com/sh/product/321106"><dt id="mlist_1"><em></em><img class="lazy" src="https://image2.benlailife.com/ProductImages/000/000/321/106/medium/2360f4d4-78f7-47c2-8192-7d631ab2fdad.jpg" data-original="https://image2.benlailife.com/ProductImages/000/000/321/106/medium/2360f4d4-78f7-47c2-8192-7d631ab2fdad.jpg" style="opacity: 1;"></dt><dd id="mmlist_1"><p id="productSname_1">佳沛新西兰有机金奇异果16粒装 </p><p class="price" id="price_1"><span>¥98</span><font>¥168</font></p><p class="comment" id="comment_1">1条评论<span>好评100%</span></p></dd></a></dl><dl id="list_2"><a href="javascript:;" onclick="addProductToCart(320720,0,1)" class="btn"></a><a href="https://m.benlai.com/sh/product/320720"><dt id="mlist_2"><em></em><img class="lazy" src="https://image2.benlailife.com/ProductImages/000/000/320/720/medium/c61386a7-97df-4fbf-9b4c-00398910e86e.jpg" data-original="https://image2.benlailife.com/ProductImages/000/000/320/720/medium/c61386a7-97df-4fbf-9b4c-00398910e86e.jpg" style="opacity: 1;"></dt><dd id="mmlist_2"><p id="productSname_2" class="name">佳沛意大利绿奇异果 原箱装3.5kg（33-36粒） 酸甜可口 营养丰富</p><p class="text">酸甜可口 营养丰富</p><p class="ico01">直降130.00元</p><p class="price" id="price_2"><span>¥98</span><font>¥228</font></p><p class="comment" id="comment_2">190条评论<span>好评99%</span></p></dd></a></dl><dl id="list_3"><a href="javascript:;" onclick="addProductToCart(299454,0,1)" class="btn"></a><a href="https://m.benlai.com/sh/product/299454"><dt id="mlist_3"><em></em><img class="lazy" src="https://image2.benlailife.com/ProductImages/000/000/299/454/medium/c1dfce69-70e0-4142-8ef3-f7efa1fbc16b.jpg" data-original="https://image2.benlailife.com/ProductImages/000/000/299/454/medium/c1dfce69-70e0-4142-8ef3-f7efa1fbc16b.jpg" style="opacity: 1;"></dt><dd id="mmlist_3"><p id="productSname_3" class="name">【年货礼包】七彩鲜果 · 尝尝这越洋跨海的新鲜味 该礼包仅配送上海、浙江、江苏33城</p><p class="text">该礼包仅配送上海、浙江、江苏33城</p><p class="price" id="price_3"><span>¥399</span></p><p class="comment" id="comment_3">80条评论<span>好评98%</span></p></dd></a></dl></ul>
+            <div class="mui-pull-bottom-pocket"><div class="mui-pull"><div class="mui-pull-loading mui-icon mui-spinner"></div><div class="mui-pull-caption">上拉显示更多</div></div></div></div>
+        <div class="ind_gift_none" style="display: none;">
+            <img src="//image.benlailife.com/static/images/icon02_c8adacb9.png">
+            <p>暂时没有此商品，敬请期待</p>
+        </div>
+        <div class="mui-scrollbar mui-scrollbar-vertical"><div class="mui-scrollbar-indicator" style="transition-duration: 0ms; display: block; height: 8px; transform: translate3d(0px, 572px, 0px) translateZ(0px);"></div></div></div>
+
+</div>
+
+
+<script type="text/javascript" async="">
+    var isProductCondition = 'True';
+    var _xwq = _xwq || [];
+    (function () {
+        var u = "piwik/";
+        _xwq.push(["setSiteId", 10]);
+        _xwq.push(["setAppType", "m"]);         //默认为web站, m, app
+        var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+        g.type = 'text/javascript'; g.async = true; g.defer = true; g.src = u + '_xwpk.js'; s.parentNode.insertBefore(g, s);
+    })();
+</script>
+</body>
+</html>
