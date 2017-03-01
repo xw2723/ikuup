@@ -199,6 +199,9 @@ window.xwpk = (function(){
                 params["osVersion"] = infoOS.version;
             }
 
+            //设备品牌
+            params["devBrand"] = params["devBrand"] || self.parsingUserAgent.getEB() || "";
+
             /**
              *  app内嵌页：设备信息参数由app注入给内嵌页，然后提供给统计js
              *  web站和m站：所有参数有js获取
@@ -515,11 +518,17 @@ window.xwpk = (function(){
          */
         function sendRequest(request, callback){
             // 生产
-            var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
+            //var apiUrl = "//bitj.benlai.com/Bitj/js/commit_data.do";
             // 测试
             //var apiUrl = "//192.168.60.28:8080/Bitj/js/commit_data.do";
             // 本地
-            //var apiUrl = "//10.10.110.113:3000/piwik/xwpk";
+            var apiUrl = "//10.10.110.113:3333/piwik/xwpk";
+
+            //测试
+            window.onload = function(){
+                alert(params["devBrand"]);
+                document.write(navigator.userAgent.toLowerCase());
+            };
 
             var image = new Image(1, 1);
             image.onload = function () {
@@ -908,7 +917,6 @@ window.xwpk = (function(){
 
     /**
      * 获取系统、浏览器、设备信息
-     * 未使用，未完成
      */
     var parsingUserAgent = function(){
         var user_agent = navigator.userAgent.toLowerCase();
@@ -916,6 +924,48 @@ window.xwpk = (function(){
         return {
             getUA: function(){
                 return user_agent;
+            },
+            /**
+             * 获取设备品牌信息
+             * Equipment Brand
+             */
+            getEB: function(){
+                var equipment ={
+                    "xiaomi": ["mi ","hm note","redmi"],
+                    "huawei": ["huawei","honor","h60-l01"],
+                    "oppo": ["oppo"],
+                    "vivo": ["vivo"],
+                    "meizu": ["meizu","metal","mx5","mx4","m040","m355","m351","m031","m2 note"],
+                    "oneplus": ["oneplus"],
+                    "smartisan": ["smartisan","sm7","sm6","yq6"],
+                    "zte": ["zte"],
+                    "lenovo": ["lenovo"],
+                    "gionee": ["gionee"],
+                    "asus": ["asus"],
+                    "tcl": ["tcl"],
+                    "letv": ["letv"],
+                    "360": ["360"],
+                    "haier": ["haier"],
+                    "coolpad": ["coolpad"],
+                    "samsung": ["samsung","gt-","gt/","sm-","sm/"],
+                    "lg": ["lg"],
+                    "nexus": ["nexus"],
+                    "sony": ["sony","l36h"],
+                    "apply": ["ipad","iphone","ipod"],
+                    "htc": ["htc"],
+                    "moto": ["mto","moto"],
+                    "nokia": ["nokia"]
+                };
+
+                var ua = user_agent.split(")")[0];
+                for(var key in equipment){
+                    for(var i=0; i<equipment[key].length; i++){
+                        if(ua.indexOf(equipment[key][i])>=0){
+                            return key;
+                        }
+                    }
+                }
+                return "";
             },
             /**
              * 获取设备类型
