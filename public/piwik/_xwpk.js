@@ -524,12 +524,6 @@ window.xwpk = (function(){
             // 本地
             var apiUrl = "//10.10.110.113:3333/piwik/xwpk";
 
-            //测试
-            window.onload = function(){
-                alert(params["devBrand"]);
-                document.write(navigator.userAgent.toLowerCase());
-            };
-
             var image = new Image(1, 1);
             image.onload = function () {
                 iterator = 0; // To avoid JSLint warning of empty block
